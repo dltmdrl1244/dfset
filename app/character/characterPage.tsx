@@ -98,15 +98,15 @@ export default function CharacterPage() {
     characterId = cId;
 
     getCharacterBasicInfo();
-    getAdventureInfo();
+    // getAdventureInfo();
   }, [searchParams]);
 
-  // useEffect(() => {
-  //   if (character) {
-  //     getAdventureInfo();
-  //     getCharacterTimeline();
-  //   }
-  // }, [character]);
+  useEffect(() => {
+    if (character) {
+      getAdventureInfo();
+      // getCharacterTimeline();
+    }
+  }, [character]);
 
   // useEffect(() => {
   //   if (itemTimeline.length > 0) {
