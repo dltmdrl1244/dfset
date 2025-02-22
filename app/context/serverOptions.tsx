@@ -1,5 +1,3 @@
-import React, { createContext, useContext } from "react";
-
 interface ServerOption {
   serverId: string;
   serverName: string;
@@ -17,12 +15,6 @@ export const serverOptions: ServerOption[] = [
   { serverId: "anton", serverName: "안톤" },
   { serverId: "bakal", serverName: "바칼" },
 ];
-
-const ServerOptionsContext = createContext<ServerOption[]>(serverOptions);
-
-export const useServerOptionsContext = () => {
-  return useContext(ServerOptionsContext);
-};
 
 export function getServerName(serverId: string) {
   const server = serverOptions.find((server) => server.serverId === serverId);

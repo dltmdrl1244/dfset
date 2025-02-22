@@ -1,4 +1,4 @@
-import { Box, Button, Center, HStack, Image, Text } from "@chakra-ui/react";
+import { Button, Center, HStack, Image } from "@chakra-ui/react";
 import Link from "next/link";
 
 export default function Footer() {

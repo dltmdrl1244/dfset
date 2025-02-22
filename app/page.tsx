@@ -4,8 +4,7 @@ import Title from "./components/title";
 import Form from "./components/form";
 import SearchResult from "./components/characterSearchResult";
 import { useState } from "react";
-import { VStack, Box, Flex, Center } from "@chakra-ui/react";
-import { TopBar } from "./components/topbar";
+import { VStack } from "@chakra-ui/react";
 import BaseLayout from "./components/baseLayout";
 import SearchHistory from "./components/searchHistory";
 

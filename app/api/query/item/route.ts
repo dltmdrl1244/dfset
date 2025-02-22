@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "@/db";
 import { defaultAPIURL } from "@/app/utils/apiconfig";
@@ -13,7 +12,7 @@ interface Item {
   isDistinct: boolean;
 }
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest) {
   const itemId = req.nextUrl.searchParams.get("itemId");
   const apikey = process.env.NEXT_PUBLIC_DFSET_APIKEY || "";
 
@@ -97,7 +96,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
       } catch (error) {
         return new NextResponse(
           JSON.stringify({
-            message: "something wrong",
+            message: error,
           }),
           {
             status: 400,
@@ -110,7 +109,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
     console.error(error);
     return new NextResponse(
       JSON.stringify({
-        message: "error !!!!!!!",
+        message: "error",
       }),
       {
         status: 500,
@@ -120,7 +119,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
   }
 }
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
   const myJson = await req.json();
   const items: Item[] = myJson.items;
 

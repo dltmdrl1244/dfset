@@ -5,7 +5,6 @@ import {
   getServerName,
   useServerOptionsContext,
 } from "../context/serverOptions";
-import { defaultAPIURL } from "../utils/apiconfig";
 import {
   FormControl,
   Input,
@@ -16,10 +15,6 @@ import {
   MenuList,
   MenuItem,
   Center,
-  Flex,
-  Text,
-  Box,
-  VStack,
 } from "@chakra-ui/react";
 import { redirect } from "next/navigation";
 
@@ -41,8 +36,6 @@ export default function Form({
   const serverOptions = useServerOptionsContext();
   const [serverId, setServerId] = useState("all");
   const [characterName, setCharacterName] = useState("");
-  const apikey = process.env.NEXT_PUBLIC_DFSET_APIKEY || "";
-  // const router = useRouter();
 
   useEffect(() => {
     searchCharacters();
@@ -83,7 +76,7 @@ export default function Form({
       const data = await response.json();
 
       const characters: Character[] = data.data.rows.map(
-        (item: any): Character => ({
+        (item): Character => ({
           serverId: item.serverId,
           serverName: getServerName(item.serverId),
           characterName: item.characterName,

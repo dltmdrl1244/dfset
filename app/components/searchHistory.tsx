@@ -1,14 +1,4 @@
-import {
-  Box,
-  Center,
-  ListItem,
-  Text,
-  UnorderedList,
-  Grid,
-  GridItem,
-  HStack,
-  Flex,
-} from "@chakra-ui/react";
+import { Center, Text, Grid, GridItem } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { CloseIcon } from "@chakra-ui/icons";
 import { ServerBadge } from "./badges";

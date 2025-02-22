@@ -1,10 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "@/db";
-import { defaultAPIURL } from "@/app/utils/apiconfig";
 import { ItemTimelineInfo } from "@/app/context/ItemTimelineContext";
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const characterId = searchParams.get("characterId");
 
@@ -41,7 +39,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
   }
 }
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
   const myJson = await req.json();
   const timelines: ItemTimelineInfo[] = myJson.timelines;
   const characterId: string = myJson.characterId;

@@ -1,5 +1,4 @@
-import { Center, Button, Box, HStack, Text } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
+import { Center, Button } from "@chakra-ui/react";
 import Link from "next/link";
 
 interface TopBarButtonProps {
@@ -25,7 +24,6 @@ const TopBarButton: React.FC<TopBarButtonProps> = ({ buttonString, url }) => {
 };
 
 export const TopBar = () => {
-  const router = useRouter();
   return (
     <Center
       width="100%"

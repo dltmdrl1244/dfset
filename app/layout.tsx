@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { ChakraProvider } from "@chakra-ui/react";
-import ContextProvider from "./context/ContextProvider";
 import { Noto_Sans_KR } from "next/font/google";
 
 export const metadata: Metadata = {
@@ -21,9 +20,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning>
       <body className={notoSansKr.className}>
-        <ChakraProvider>
-          <ContextProvider>{children}</ContextProvider>
-        </ChakraProvider>
+        <ChakraProvider>{children}</ChakraProvider>
       </body>
     </html>
   );

@@ -34,7 +34,6 @@ export const AdventureAccordion: React.FC<AdventureAccordionProps> = ({
     }
 
     makeAdventureItemTable();
-    makeAdventureHighestRarity();
   }, [characterNameToItemHistory]);
 
   function makeAdventureItemTable() {
@@ -46,7 +45,6 @@ export const AdventureAccordion: React.FC<AdventureAccordionProps> = ({
       characterNameToItemHistory
     )) {
       // historyDict는 ItemHistory 타입
-      characterNameToItemHistory;
       for (const [key, value] of Object.entries(historyDict)) {
         const itemKey: number = Number(key); // 아이템키
         const historyItem: HistoryItem = value; // HistoryItem
@@ -76,19 +74,6 @@ export const AdventureAccordion: React.FC<AdventureAccordionProps> = ({
       }
     }
     setAdventureItemHistory(tempAdventureItemHistory);
-  }
-
-  function makeAdventureHighestRarity() {
-    if (Object.keys(characterNameToItemHistory).length <= 0) {
-      return;
-    }
-
-    for (const [characterName, historyDict] of Object.entries(
-      characterNameToItemHistory
-    )) {
-      for (const [itemKey, timelineInfos] of Object.entries(historyDict)) {
-      }
-    }
   }
 
   async function getAdventureItemTable() {

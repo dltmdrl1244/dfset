@@ -10,8 +10,6 @@ import {
   Button,
   HStack,
   useToast,
-  UnorderedList,
-  ListItem,
 } from "@chakra-ui/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -197,7 +195,6 @@ export default function Home() {
             characterName: character.characterName,
           }),
         });
-        const postData = await postResponse.json();
       }
     } catch (error) {
       console.error(error);
@@ -309,7 +306,7 @@ export default function Home() {
     }
     // DB에 저장
     try {
-      const response = await fetch("api/query/timeline", {
+      await fetch("api/query/timeline", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -338,7 +335,7 @@ export default function Home() {
     }
     // DB에 저장
     try {
-      const response = await fetch("api/query/history", {
+      await fetch("api/query/history", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -359,7 +356,7 @@ export default function Home() {
   TODO : 최근 타임라인이 DB에 있다면 갱신 시 startDate를 last update time으로 설정 
   */
   const getCharacterTimelineFromAPI = async (startDate?: string) => {
-    let tempTimelines: TimelineInfo[] = [];
+    const tempTimelines: TimelineInfo[] = [];
 
     if (!character) {
       router.push("/");
@@ -390,7 +387,7 @@ export default function Home() {
 
         if (response.status === 200) {
           if (data.data.timeline.rows.length > 0) {
-            let newItems: TimelineInfo[] = data.data.timeline.rows.map(
+            const newItems: TimelineInfo[] = data.data.timeline.rows.map(
               (row: TimelineApiResponse): TimelineInfo => ({
                 item: {
                   itemId: row.data.itemId,
@@ -431,11 +428,9 @@ export default function Home() {
     }
 
     // 현재까지
-    let endDate = dayjs();
+    const endDate = dayjs();
     // 직접 지정
     // let endDate = dayjs("2025-02-01 06:00:00");
-    let i = 0;
-    // while (endDate.isAfter(currentStartDate, "second") && i++ < 10) {
     while (endDate.isAfter(currentStartDate, "second")) {
       const diff = endDate.diff(currentStartDate, "d");
       const period = Math.min(88, diff);
@@ -454,9 +449,9 @@ export default function Home() {
     }
 
     // 디테일 값 수정
-    let timelineResult: TimelineInfo[] = [];
+    const timelineResult: TimelineInfo[] = [];
     for (let i = 0; i < tempTimelines.length; i++) {
-      let timeline = tempTimelines[i];
+      const timeline = tempTimelines[i];
       const response = await fetch(
         `/api/query/item?itemId=${timeline.item.itemId}`
       );
@@ -501,10 +496,10 @@ export default function Home() {
   };
 
   async function updateItemDetails() {
-    let tempItemHistoryDict: ItemHistory = {};
-    let tempItemCountArray = [0, 0, 0];
-    let tempWeaponList: Weapon[] = [];
-    let tempPotList: SetItem[] = [];
+    const tempItemHistoryDict: ItemHistory = {};
+    const tempItemCountArray = [0, 0, 0];
+    const tempWeaponList: Weapon[] = [];
+    const tempPotList: SetItem[] = [];
     // let tempHighestRarityDict: HighestRarity = {};
     ////////////////////////////////////////////////////////////////////
     function updateItemHistoryDict(
@@ -670,7 +665,12 @@ export default function Home() {
                 width="240px"
                 minWidth="240px"
                 boxShadow="base">
-                <Image src={characterImageUrl} mt={-10} ml={1.5} />
+                <Image
+                  src={characterImageUrl}
+                  mt={-10}
+                  ml={1.5}
+                  alt="characterImageURL"
+                />
                 <Flex direction="column">
                   <Center flexDirection={"column"}>
                     <Text as="b" fontSize={"lg"}>
