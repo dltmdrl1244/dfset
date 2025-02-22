@@ -21,7 +21,7 @@ export default function AdventurePage() {
   const router = useRouter();
   const [adventureName, setAdventureName] = useState<string>("");
   const [characterBasicList, setCharacterBasicList] = useState<
-    CharacterBasic[]
+    SimpleCharacter[]
   >([]);
   const [characterList, setCharacterList] = useState<Character[]>([]);
   const [tempAdventureName, setTempAdventureName] = useState<string>("");
@@ -53,12 +53,24 @@ export default function AdventurePage() {
     const params = new URLSearchParams();
     params.set("adventureName", aName);
 
+    const tempSimpleCharacterList: SimpleCharacter[] = [];
+
     try {
       const response = await fetch(`api/query/adventure?${params.toString()}`);
       const data = await response.json();
 
       if (data.data && Array.isArray(data.data)) {
-        setCharacterBasicList(data.data);
+        data.data.map((character: SimpleCharacterResponse) => {
+          const newCharacter: SimpleCharacter = {
+            serverId: character.server_id,
+            characterId: character.character_id,
+            characterName: character.character_name,
+            adventureName: character.adventure_name,
+          };
+          tempSimpleCharacterList.push(newCharacter);
+        });
+
+        setCharacterBasicList(tempSimpleCharacterList);
       }
     } catch (error) {
       console.error("error ,", error);
@@ -76,7 +88,17 @@ export default function AdventurePage() {
       try {
         const response = await fetch(`api/query/character?${param.toString()}`);
         const data = await response.json();
-        tempCharacterList.push(data.data);
+        if (data.data) {
+          const newCharacter: Character = {
+            serverId: data.data.server_id,
+            serverName: data.data.server_name,
+            characterId: data.data.character_id,
+            characterName: data.data.character_name,
+            adventureName: data.data.adventure_name,
+            jobName: data.data.job_name,
+          };
+          tempCharacterList.push(newCharacter);
+        }
       } catch (error) {
         console.error(error);
         continue;

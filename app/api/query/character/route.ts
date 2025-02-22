@@ -12,15 +12,13 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const [rows] = await sql(
-      "SELECT * FROM character_basic WHERE characterId = ($1)",
+    const rv = await sql(
+      "SELECT * FROM character_basic WHERE character_id = ($1)",
       [characterId]
     );
-    if (Array.isArray(rows) && rows.length > 0) {
-      return NextResponse.json(
-        { data: rows[0], message: "OK" },
-        { status: 200 }
-      );
+
+    if (rv.length > 0) {
+      return NextResponse.json({ data: rv[0], message: "OK" }, { status: 200 });
     } else {
       // 만약 캐릭터 정보가 없다면 api로 가져와야 하니까 그걸 알려주자
       return NextResponse.json({ message: "no character" }, { status: 200 });
@@ -50,7 +48,7 @@ export async function POST(req: NextRequest) {
 
   try {
     await sql(
-      "INSERT INTO character_basic (characterId, characterName, serverId, serverName, adventureName, jobName) VALUES ($1, $2, $3, $4, $5, $6)",
+      "INSERT INTO character_basic (character_id, character_name, server_id, server_name, adventure_name, job_name) VALUES ($1, $2, $3, $4, $5, $6)",
       [
         character.characterId,
         character.characterName,

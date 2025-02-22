@@ -29,7 +29,6 @@ export default function SearchHistory({
   }
 
   function handleHistoryClick(idx: number) {
-    console.log("이거 클릭함 : ", searchHistory[idx]);
     setSearchInfo(searchHistory[idx]);
   }
 

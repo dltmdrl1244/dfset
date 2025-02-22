@@ -14,13 +14,13 @@ export async function GET(req: NextRequest) {
 
   if (characterId) {
     try {
-      const [rows] = await sql(
-        "SELECT * FROM adventure WHERE characterId = ($1)",
+      const rv = await sql(
+        "SELECT * FROM adventure WHERE character_id = ($1)",
         [characterId]
       );
-      if (Array.isArray(rows) && rows.length > 0) {
+      if (rv.length > 0) {
         return NextResponse.json(
-          { data: rows[0], message: "OK" },
+          { data: rv[0], message: "OK" },
           { status: 200 }
         );
       } else {
@@ -41,16 +41,13 @@ export async function GET(req: NextRequest) {
     }
   } else {
     try {
-      const [rows] = await sql(
-        "SELECT * FROM adventure WHERE adventureName = ($1) ORDER BY create_time ASC",
+      const rv = await sql(
+        "SELECT * FROM adventure WHERE adventure_name = ($1) ORDER BY create_time ASC",
         [adventureName]
       );
 
-      if (Array.isArray(rows) && rows.length > 0) {
-        return NextResponse.json(
-          { data: rows, message: "OK" },
-          { status: 200 }
-        );
+      if (rv.length > 0) {
+        return NextResponse.json({ data: rv, message: "OK" }, { status: 200 });
       } else {
         return NextResponse.json({ message: "no adventure" }, { status: 200 });
       }
@@ -98,18 +95,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  try {
-    const [rows] = await sql(
-      "SELECT * FROM adventure WHERE characterId = ($1)",
-      [characterId]
-    );
+  console.log("ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ");
 
-    if (Array.isArray(rows) && rows.length > 0) {
+  try {
+    const rv = await sql("SELECT * FROM adventure WHERE character_id = ($1)", [
+      characterId,
+    ]);
+
+    if (rv.length > 0) {
       return NextResponse.json({ message: "이미 있음" }, { status: 200 });
     }
 
     await sql(
-      "INSERT INTO adventure (characterId, serverId, adventureName, characterName) VALUES ($1, $2, $3, $4)",
+      "INSERT INTO adventure (character_id, server_id, adventure_name, character_name) VALUES ($1, $2, $3, $4)",
       [characterId, serverId, adventureName, characterName]
     );
 

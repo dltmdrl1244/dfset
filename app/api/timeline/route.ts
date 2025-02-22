@@ -2,8 +2,6 @@ import { defaultAPIURL } from "@/app/utils/apiconfig";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
-  // TODO : 마지막 업데이트 정보를 가져와서 그 이후로부터만 검색하는 로직 추가 필요
-
   const { searchParams } = new URL(request.url);
   const { sId, cId, next, startDate, endDate, limit } =
     Object.fromEntries(searchParams);

@@ -90,15 +90,16 @@ export const AdventureAccordion: React.FC<AdventureAccordionProps> = ({
 
       for (const character of data.data) {
         const characterparam = new URLSearchParams();
-        characterparam.set("characterId", character.characterId);
+        characterparam.set("characterId", character.character_id);
 
         const characterResponse = await fetch(
           `api/query/history?${characterparam.toString()}`
         );
         const characterData = await characterResponse.json();
-        if (characterData.data && characterData.data.historyDict) {
-          tempCharacterNameToItemHistory[character.characterName] =
-            characterData.data.historyDict;
+
+        if (characterData.data && characterData.data.history_dict) {
+          tempCharacterNameToItemHistory[character.character_name] =
+            characterData.data.history_dict;
         }
       }
     } catch (error) {

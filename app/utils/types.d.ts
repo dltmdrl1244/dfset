@@ -42,6 +42,26 @@ interface HistoryItem {
   };
 }
 
+interface EquipmentResponse {
+  item_id: string;
+  item_name: string;
+  rarity: string;
+  set_id: string;
+  slot_id: string;
+  item_type_detail_id: string;
+  is_fusion: boolean;
+  is_distinct: boolean;
+}
+
+interface CharacterResponse {
+  server_id: string;
+  server_name: string;
+  character_id: string;
+  character_name: string;
+  adventure_name: string;
+  job_name: string;
+}
+
 interface Character {
   serverId: string;
   serverName: string;
@@ -51,7 +71,14 @@ interface Character {
   jobName: string;
 }
 
-interface CharacterBasic {
+interface SimpleCharacterResponse {
+  server_id: string;
+  character_id: string;
+  character_name: string;
+  adventure_name: string;
+}
+
+interface SimpleCharacter {
   serverId: string;
   characterId: string;
   characterName: string;

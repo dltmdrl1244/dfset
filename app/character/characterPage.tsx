@@ -98,24 +98,22 @@ export default function CharacterPage() {
     characterId = cId;
 
     getCharacterBasicInfo();
-    // getAdventureInfo();
   }, [searchParams]);
 
   useEffect(() => {
     if (character) {
       getAdventureInfo();
-      // getCharacterTimeline();
+      getCharacterTimeline();
     }
   }, [character]);
 
-  // useEffect(() => {
-  //   if (itemTimeline.length > 0) {
-  //     updateItemDetails();
-  //   }
-  // }, [itemTimeline]);
+  useEffect(() => {
+    if (itemTimeline.length > 0) {
+      updateItemDetails();
+    }
+  }, [itemTimeline]);
 
   const getCharacterBasicInfo = async () => {
-    console.log("get character basic info");
     const params = new URLSearchParams();
     params.set("characterId", characterId);
     try {
@@ -125,13 +123,14 @@ export default function CharacterPage() {
       if (data.data) {
         // 있으면 바로 꺼내서 setCharacter
         const newCharacter: Character = {
-          serverId: data.data.serverId,
-          serverName: data.data.serverName,
-          characterId: data.data.characterId,
-          characterName: data.data.characterName,
-          jobName: data.data.jobName,
-          adventureName: data.data.adventureName,
+          serverId: data.data.server_id,
+          serverName: data.data.server_name,
+          characterId: data.data.character_id,
+          characterName: data.data.character_name,
+          jobName: data.data.job_name,
+          adventureName: data.data.adventure_name,
         };
+
         setCharacter(newCharacter);
       } else {
         // 없으면 api 호출해서 Character 만들고, POST
@@ -143,7 +142,6 @@ export default function CharacterPage() {
           `api/characterBasic?${getParam.toString()}`
         );
         const getData = await getResponse.json();
-
         const newCharacter: Character = {
           serverId: getData.data.serverId,
           serverName: getServerName(getData.data.serverId),
@@ -183,7 +181,8 @@ export default function CharacterPage() {
         `api/query/adventure?${adventureParams.toString()}`
       );
       const adventureData = await adventureResponse.json();
-      if (!adventureData.data && adventureResponse.ok) {
+
+      if (!adventureData.data) {
         // 없으면
         const postResponse = await fetch(`api/query/adventure`, {
           method: "POST",
@@ -206,7 +205,6 @@ export default function CharacterPage() {
   /*
   characterId를 통해 먼저 DB에서 최근 타임라인을 탐색
   만약 DB에 타임라인 정보가 없다면 API 호출 및 DB에 새롭게 저장
-  TODO : 최근 타임라인 + 그 이후 데이터 API 호출해서 갱신할 수 있는 '갱신' 버튼 추가
   */
   async function getCharacterTimeline() {
     if (!character) {
@@ -280,7 +278,10 @@ export default function CharacterPage() {
         });
 
         saveCharacterTimeline(tempTimelines);
-        setItemTimeline(tempTimelines);
+
+        if (rv.length > 0) {
+          setItemTimeline(tempTimelines);
+        }
       } else {
         // db에 데이터 없음
         const rv = await getCharacterTimelineFromAPI();
@@ -347,7 +348,6 @@ export default function CharacterPage() {
           histories: histories,
         }),
       });
-      // console.log("History DB가 업데이트되었습니다.");
     } catch (error) {
       console.error(error);
     }
@@ -465,28 +465,28 @@ export default function CharacterPage() {
       ) {
         continue;
       }
-      const newItem = data.data[0];
+      const newItem: EquipmentResponse = data.data[0];
 
-      if (newItem.itemTypeDetailId !== null) {
+      if (newItem.item_type_detail_id !== null) {
         // 무기
         const weapon: Weapon = {
-          itemId: timeline.item.itemId,
-          itemName: timeline.item.itemName,
-          rarity: timeline.item.rarity,
-          itemTypeDetailId: newItem.itemTypeDetailId,
+          itemId: newItem.item_id,
+          itemName: newItem.item_name,
+          rarity: rarityIndex.indexOf(newItem.rarity),
+          itemTypeDetailId: newItem.item_type_detail_id,
         };
 
         tempTimelines[i].item = weapon;
       } else {
         // 비 무기
         const setItem: SetItem = {
-          itemId: timeline.item.itemId,
-          itemName: timeline.item.itemName,
-          rarity: timeline.item.rarity,
-          setId: newItem.setId,
-          setIdx: setIdxDict[newItem.setId],
-          slotId: newItem.slotId,
-          slotIdx: slotIdxDict[newItem.slotId],
+          itemId: newItem.item_id,
+          itemName: newItem.item_name,
+          rarity: rarityIndex.indexOf(newItem.rarity),
+          setId: newItem.set_id,
+          setIdx: setIdxDict[newItem.set_id],
+          slotId: newItem.slot_id,
+          slotIdx: slotIdxDict[newItem.slot_id],
         };
 
         tempTimelines[i].item = setItem;
@@ -619,6 +619,7 @@ export default function CharacterPage() {
     setPotList([...tempPotList]);
     // setHighestRarityItemDict({ ...tempHighestRarityDict });
     saveCharacterHistory(tempItemHistoryDict);
+
     setInfoLoaded(true);
   }
 
