@@ -23,6 +23,14 @@ interface FormProps {
   setSearchInfo: React.Dispatch<React.SetStateAction<SearchHistory>>;
 }
 
+interface CharacterResponse {
+  serverId: string;
+  characterName: string;
+  characterId: string;
+  jobGrowName: string;
+  adventureName: string;
+}
+
 export default function Form({
   setSearchResult,
   setSearchHistory,
@@ -72,7 +80,7 @@ export default function Form({
       const data = await response.json();
 
       const characters: Character[] = data.data.rows.map(
-        (item): Character => ({
+        (item: CharacterResponse): Character => ({
           serverId: item.serverId,
           serverName: getServerName(item.serverId),
           characterName: item.characterName,
