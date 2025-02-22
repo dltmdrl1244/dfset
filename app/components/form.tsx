@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  getServerName,
-  useServerOptionsContext,
-} from "../context/serverOptions";
+import { serverOptions, getServerName } from "../context/serverOptions";
 import {
   FormControl,
   Input,
@@ -33,7 +30,6 @@ export default function Form({
   searchInfo,
   setSearchInfo,
 }: FormProps) {
-  const serverOptions = useServerOptionsContext();
   const [serverId, setServerId] = useState("all");
   const [characterName, setCharacterName] = useState("");
 

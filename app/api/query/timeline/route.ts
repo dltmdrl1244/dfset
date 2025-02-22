@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pool } from "@/db";
-import { ItemTimelineInfo } from "@/app/context/ItemTimelineContext";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -41,7 +40,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const myJson = await req.json();
-  const timelines: ItemTimelineInfo[] = myJson.timelines;
+  const timelines: TimelineInfo[] = myJson.timelines;
   const characterId: string = myJson.characterId;
 
   if (!characterId || typeof characterId !== "string") {
