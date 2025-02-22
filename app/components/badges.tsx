@@ -1,7 +1,11 @@
 import { Badge } from "@chakra-ui/react";
 import { serverOptions } from "../context/serverOptions";
 
-export const ServerBadge = ({ serverId }) => {
+interface ServerBadgeProps {
+  serverId: string;
+}
+
+export const ServerBadge: React.FC<ServerBadgeProps> = ({ serverId }) => {
   const server = serverOptions.find((server) => server.serverId === serverId);
   return (
     <Badge bgColor={"gray"} variant="solid" fontSize="sm">
@@ -37,7 +41,11 @@ export const TaechoBadge = () => {
   );
 };
 
-export const ItemObtainCodeBadge = ({ str }) => {
+interface BadgeTextProps {
+  str: string;
+}
+
+export const ItemObtainCodeBadge: React.FC<BadgeTextProps> = ({ str }) => {
   return (
     <Badge bgColor={"darkgreen"} variant="solid" fontSize="sm">
       {str}
@@ -45,7 +53,7 @@ export const ItemObtainCodeBadge = ({ str }) => {
   );
 };
 
-export const CharacterNameBadge = ({ str }) => {
+export const CharacterNameBadge: React.FC<BadgeTextProps> = ({ str }) => {
   return (
     <Badge colorScheme="blue" variant="solid" fontSize="sm">
       {str}
