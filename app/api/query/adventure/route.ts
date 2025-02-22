@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { pool } from "@/db";
+// import { pool } from "@/db";
+import { neon } from "@neondatabase/serverless";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const characterId = searchParams.get("characterId");
   const adventureName = searchParams.get("adventureName");
+  const sql = neon(`${process.env.DATABASE_URL}`);
 
   if (!characterId && !adventureName) {
     return NextResponse.json({ error: "Invalid parameter" }, { status: 400 });
@@ -12,8 +14,8 @@ export async function GET(req: NextRequest) {
 
   if (characterId) {
     try {
-      const [rows] = await pool.execute(
-        "SELECT * FROM adventure WHERE characterId = (?)",
+      const [rows] = await sql(
+        "SELECT * FROM adventure WHERE characterId = ($1)",
         [characterId]
       );
       if (Array.isArray(rows) && rows.length > 0) {
@@ -39,8 +41,8 @@ export async function GET(req: NextRequest) {
     }
   } else {
     try {
-      const [rows] = await pool.execute(
-        "SELECT * FROM adventure WHERE adventureName = (?) ORDER BY create_time ASC",
+      const [rows] = await sql(
+        "SELECT * FROM adventure WHERE adventureName = ($1) ORDER BY create_time ASC",
         [adventureName]
       );
 
@@ -73,6 +75,7 @@ export async function POST(req: NextRequest) {
   const serverId: string = myJson.serverId;
   const adventureName: string = myJson.adventureName;
   const characterName: string = myJson.characterName;
+  const sql = neon(`${process.env.DATABASE_URL}`);
 
   if (!characterId || typeof characterId !== "string") {
     return NextResponse.json({ error: "Invalid characterId" }, { status: 400 });
@@ -96,8 +99,8 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const [rows] = await pool.execute(
-      "SELECT * FROM adventure WHERE characterId = (?)",
+    const [rows] = await sql(
+      "SELECT * FROM adventure WHERE characterId = ($1)",
       [characterId]
     );
 
@@ -105,13 +108,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "이미 있음" }, { status: 200 });
     }
 
-    const connection = await pool.getConnection();
-    await connection.execute(
-      "INSERT INTO adventure (characterId, serverId, adventureName, characterName) VALUES (?, ?, ?, ?)",
+    await sql(
+      "INSERT INTO adventure (characterId, serverId, adventureName, characterName) VALUES ($1, $2, $3, $4)",
       [characterId, serverId, adventureName, characterName]
     );
 
-    connection.release();
     return NextResponse.json(
       { message: "Character added successfully" },
       { status: 200 }

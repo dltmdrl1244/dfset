@@ -1,17 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { pool } from "@/db";
+import { neon } from "@neondatabase/serverless";
+// import { pool } from "@/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const characterId = searchParams.get("characterId");
+  const sql = neon(`${process.env.DATABASE_URL}`);
 
   if (!characterId || typeof characterId !== "string") {
     return NextResponse.json({ error: "Invalid characterId" }, { status: 400 });
   }
 
   try {
-    const [rows] = await pool.execute(
-      "SELECT * FROM character_basic WHERE characterId = (?)",
+    const [rows] = await sql(
+      "SELECT * FROM character_basic WHERE characterId = ($1)",
       [characterId]
     );
     if (Array.isArray(rows) && rows.length > 0) {
@@ -40,15 +42,15 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const myJson = await req.json();
   const character: Character = myJson.character;
+  const sql = neon(`${process.env.DATABASE_URL}`);
 
   if (!character) {
     return NextResponse.json({ error: "Invalid character" }, { status: 400 });
   }
 
   try {
-    const connection = await pool.getConnection();
-    await connection.execute(
-      "INSERT INTO character_basic (characterId, characterName, serverId, serverName, adventureName, jobName) VALUES (?, ?, ?, ?, ?, ?)",
+    await sql(
+      "INSERT INTO character_basic (characterId, characterName, serverId, serverName, adventureName, jobName) VALUES ($1, $2, $3, $4, $5, $6)",
       [
         character.characterId,
         character.characterName,
@@ -59,7 +61,6 @@ export async function POST(req: NextRequest) {
       ]
     );
 
-    connection.release();
     return NextResponse.json(
       { message: "Character added successfully" },
       { status: 200 }

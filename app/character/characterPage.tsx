@@ -98,22 +98,24 @@ export default function CharacterPage() {
     characterId = cId;
 
     getCharacterBasicInfo();
+    getAdventureInfo();
   }, [searchParams]);
 
-  useEffect(() => {
-    if (character) {
-      getAdventureInfo();
-      getCharacterTimeline();
-    }
-  }, [character]);
+  // useEffect(() => {
+  //   if (character) {
+  //     getAdventureInfo();
+  //     getCharacterTimeline();
+  //   }
+  // }, [character]);
 
-  useEffect(() => {
-    if (itemTimeline.length > 0) {
-      updateItemDetails();
-    }
-  }, [itemTimeline]);
+  // useEffect(() => {
+  //   if (itemTimeline.length > 0) {
+  //     updateItemDetails();
+  //   }
+  // }, [itemTimeline]);
 
   const getCharacterBasicInfo = async () => {
+    console.log("get character basic info");
     const params = new URLSearchParams();
     params.set("characterId", characterId);
     try {
