@@ -2,7 +2,11 @@ import { Box, Center, VStack } from "@chakra-ui/react";
 import { TopBar } from "./topbar";
 import Footer from "./footer";
 
-export default function BaseLayout({ children }) {
+interface BaseLayoutProps {
+  children: React.ReactNode;
+}
+
+const BaseLayout: React.FC<BaseLayoutProps> = ({ children }) => {
   return (
     <>
       <TopBar />
@@ -16,4 +20,6 @@ export default function BaseLayout({ children }) {
       <Footer />
     </>
   );
-}
+};
+
+export default BaseLayout;
