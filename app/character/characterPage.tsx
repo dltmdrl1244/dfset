@@ -623,6 +623,19 @@ export default function CharacterPage() {
     setInfoLoaded(true);
   }
 
+  function convertToKSTMinute(isoString: string) {
+    const currentTime = dayjs(isoString);
+    currentTime.add(9, "hours");
+    return `${currentTime.get("year")}-${String(
+      currentTime.get("month")
+    ).padStart(2, "0")}-${String(currentTime.get("day")).padStart(
+      2,
+      "0"
+    )} ${String(currentTime.get("hour")).padStart(2, "0")}:${String(
+      currentTime.get("minute")
+    ).padStart(2, "0")}`;
+  }
+
   async function handleUpdateButtonClicked() {
     const currentTime = dayjs();
     const latestUpdateTime = dayjs(latestUpdate);
@@ -715,7 +728,9 @@ export default function CharacterPage() {
                       <Text fontSize="sm" mt={1}>
                         최근 업데이트:
                       </Text>
-                      <Text fontSize="xs">{latestUpdate}</Text>
+                      <Text fontSize="xs">
+                        {convertToKSTMinute(latestUpdate)}
+                      </Text>
                     </Flex>
                   </Box>
                 </Flex>
