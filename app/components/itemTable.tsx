@@ -37,9 +37,9 @@ export const ItemTable: React.FC<ItemTableProps> = ({
   return (
     <Box maxWidth="730px" boxShadow="base">
       <TableContainer>
-        <Table>
+        <Table border={`2px solid black`}>
           <Thead>
-            <Tr>
+            <Tr border={`2px solid black`}>
               <Th
                 border={"1px solid black"}
                 p={1}
@@ -55,7 +55,6 @@ export const ItemTable: React.FC<ItemTableProps> = ({
                   borderRight={`${
                     slotIdx == 4 || slotIdx == 7 || slotIdx == 10 ? 2 : 0
                   }px solid black`}
-                  // borderBottom={`2px solid black`}
                   borderTop={`2px solid black`}
                   p={1}
                   width="50px"
@@ -69,7 +68,9 @@ export const ItemTable: React.FC<ItemTableProps> = ({
           </Thead>
           <Tbody>
             {itemSets.map((set, setIdx) => (
-              <Tr key={`set${setIdx}`}>
+              <Tr
+                key={`set${setIdx}`}
+                borderBottom={`${(setIdx + 1) % 3 == 0 ? 3 : 1}px solid black`}>
                 <Th
                   bgColor="darkgrey"
                   border={"1px solid black"}

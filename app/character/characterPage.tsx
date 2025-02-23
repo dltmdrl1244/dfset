@@ -56,18 +56,18 @@ export default function CharacterPage() {
   const rarityIndex = ["레전더리", "에픽", "태초"];
   const toast = useToast();
   const setIdxDict: Record<string, number> = {
-    "7f788a703a87d783079b41d0fe6448c9": 0,
-    "11f7d203a05ea6f13300c0facb39f11e": 1,
-    "7c9c8335b72c2907df20786f8f5b27f0": 2,
-    "2877466bc2fc8bedf7799d88167c9fe3": 3,
-    "4ee7bd5912cda6e2a24c1f36d5202b46": 4,
-    "4e65968c4d30898e6879434dc641b6e4": 5,
-    "854dc8c01b1bc231e132dae5df3c52bc": 6,
-    "93e7825053bdec4e0f4c12837cf4f57e": 7,
-    "3af7c961e7d8cd8b5b42c5f82af2a0ad": 8,
-    e23286107ba4328af86c83aabc347e9e: 9,
-    "8e9cb65cb6285d7e2f084f440aa18870": 10,
-    b92ca7784123b5fea9cea40144925194: 11,
+    "7f788a703a87d783079b41d0fe6448c9": 0, // 황금향
+    b92ca7784123b5fea9cea40144925194: 1, // 용투장
+    "7c9c8335b72c2907df20786f8f5b27f0": 2, // 세렌디피티
+    "11f7d203a05ea6f13300c0facb39f11e": 3, // 칠흑
+    "2877466bc2fc8bedf7799d88167c9fe3": 4, // 한계
+    "8e9cb65cb6285d7e2f084f440aa18870": 5, // 마력
+    "4ee7bd5912cda6e2a24c1f36d5202b46": 6, // 페어리
+    "854dc8c01b1bc231e132dae5df3c52bc": 7, // 발키리
+    "93e7825053bdec4e0f4c12837cf4f57e": 8, // 에테
+    "3af7c961e7d8cd8b5b42c5f82af2a0ad": 9, // 그림자
+    "4e65968c4d30898e6879434dc641b6e4": 10, // 자연
+    e23286107ba4328af86c83aabc347e9e: 11, // 무리
     distinctItems: 12,
   };
 
@@ -668,8 +668,7 @@ export default function CharacterPage() {
                 borderRadius="md">
                 <InfoIcon />
                 <Text fontSize={"xs"}>
-                  베누스 에픽 융합석, 흑아 장비는 현재 조회되지 않습니다.
-                  업데이트 예정입니다.
+                  흑아 장비는 현재 조회되지 않습니다. 업데이트 예정입니다.
                 </Text>
               </HStack>
               <Box // 캐릭터 상자
@@ -753,8 +752,9 @@ export default function CharacterPage() {
           {/* </Center> */}
         </Center>
       ) : (
-        <Center minHeight="600px">
+        <Center minHeight="600px" gap={4}>
           <Spinner />
+          <Text>캐릭터별 최초 검색 시 로딩이 오래 걸립니다.</Text>
         </Center>
       )}
     </BaseLayout>
