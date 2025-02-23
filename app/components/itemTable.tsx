@@ -44,7 +44,8 @@ export const ItemTable: React.FC<ItemTableProps> = ({
                 border={"1px solid black"}
                 p={1}
                 width="60px"
-                borderRight={`2px solid black`}>
+                borderRight={`2px solid black`}
+                bg="white">
                 <Center>
                   <Text color="black">세트</Text>
                 </Center>
