@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const rv = await sql(
-      "SELECT * FROM character_history WHERE character_id = ($1) ORDER BY create_time DESC LIMIT 1",
+      "SELECT * FROM character_history WHERE character_id = ($1)",
       [characterId]
     );
 
@@ -54,15 +54,29 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await sql(
-      "INSERT INTO character_history (character_id, history_dict) VALUES ($1, $2)",
-      [characterId, JSON.stringify(histories)]
+    const data = await sql(
+      "SELECT * FROM character_history WHERE character_id = ($1)",
+      [characterId]
     );
-
-    return NextResponse.json(
-      { message: "Items added successfully" },
-      { status: 201 }
-    );
+    if (data.length <= 0) {
+      await sql(
+        "INSERT INTO character_history (character_id, history_dict) VALUES ($1, $2)",
+        [characterId, JSON.stringify(histories)]
+      );
+      return NextResponse.json(
+        { message: "Items added successfully" },
+        { status: 201 }
+      );
+    } else {
+      await sql(
+        "UPDATE character_history SET history_dict = ($1) WHERE character_id = ($2)",
+        [JSON.stringify(histories), characterId]
+      );
+      return NextResponse.json(
+        { message: "Items updated successfully" },
+        { status: 201 }
+      );
+    }
   } catch (error) {
     console.error(error);
     return NextResponse.json(

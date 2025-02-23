@@ -104,6 +104,7 @@ export default function CharacterPage() {
     if (character) {
       getAdventureInfo();
       getCharacterTimeline();
+      // getCharacterHistory();
     }
   }, [character]);
 
@@ -326,6 +327,25 @@ export default function CharacterPage() {
         isClosable: true,
       });
       getCharacterTimeline();
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function getCharacterHistory() {
+    if (!character) {
+      return;
+    }
+    const params = new URLSearchParams();
+    params.set("characterId", character.characterId);
+
+    try {
+      const response = await fetch(`api/query/history?${params.toString()}`);
+      const data = await response.json();
+
+      if (data.data && data.data.history_dict) {
+        setItemHistoryDict(data.data.history_dict);
+      }
     } catch (error) {
       console.error(error);
     }
