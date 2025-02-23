@@ -12,8 +12,10 @@ import {
   MenuList,
   MenuItem,
   Center,
+  Text,
 } from "@chakra-ui/react";
 import { redirect } from "next/navigation";
+import { useColorMode } from "@chakra-ui/react";
 
 interface FormProps {
   setSearchResult: React.Dispatch<React.SetStateAction<Character[]>>;
@@ -40,6 +42,7 @@ export default function Form({
 }: FormProps) {
   const [serverId, setServerId] = useState("all");
   const [characterName, setCharacterName] = useState("");
+  const { colorMode, toggleColorMode } = useColorMode();
 
   useEffect(() => {
     searchCharacters();
@@ -134,7 +137,7 @@ export default function Form({
                 height="100%"
                 width="100px"
                 border="1px solid #999999"
-                bgColor="white"
+                bgColor={`${colorMode === "light" ? "white" : "#1a202c"}`}
                 _hover={{ borderColor: "black" }}>
                 {serverOptions.find((option) => option.serverId === serverId)
                   ?.serverName || "서버 선택"}
@@ -144,7 +147,7 @@ export default function Form({
                   <MenuItem
                     key={option.serverId}
                     onClick={() => setServerId(option.serverId)}>
-                    {option.serverName}
+                    <Text>{option.serverName}</Text>
                   </MenuItem>
                 ))}
               </MenuList>
