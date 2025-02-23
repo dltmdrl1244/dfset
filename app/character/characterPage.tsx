@@ -678,9 +678,11 @@ export default function CharacterPage() {
   }
 
   function convertToKSTMinute(isoString: string) {
-    const currentTime = dayjs(isoString.slice(0, isoString.length - 1));
+    console.log(isoString);
 
-    currentTime.add(9, "hours");
+    var currentTime = dayjs(isoString.slice(0, isoString.length - 1));
+
+    currentTime = currentTime.add(18, "hours");
     return `${currentTime.get("year")}-${String(
       currentTime.get("month") + 1
     ).padStart(2, "0")}-${String(currentTime.get("date")).padStart(
