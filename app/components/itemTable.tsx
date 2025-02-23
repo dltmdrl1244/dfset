@@ -45,7 +45,9 @@ export const ItemTable: React.FC<ItemTableProps> = ({
                 p={1}
                 width="60px"
                 borderRight={`2px solid black`}>
-                <Center>세트</Center>
+                <Center>
+                  <Text color="black">세트</Text>
+                </Center>
               </Th>
               {itemSlots.map((slot, slotIdx) => (
                 <Th
@@ -60,7 +62,9 @@ export const ItemTable: React.FC<ItemTableProps> = ({
                   width="50px"
                   maxWidth="50px">
                   <Center>
-                    <Text as="b">{slot.slotDisplayName}</Text>
+                    <Text as="b" color="black">
+                      {slot.slotDisplayName}
+                    </Text>
                   </Center>
                 </Th>
               ))}
@@ -82,7 +86,7 @@ export const ItemTable: React.FC<ItemTableProps> = ({
                       {setIdx != 12 ? (
                         <Image src={`/set115/${setIdx + 1}.png`} />
                       ) : (
-                        <Text>고유</Text>
+                        <Text color="black">고유</Text>
                       )}
                     </Center>
                   </Tooltip>

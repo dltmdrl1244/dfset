@@ -1,5 +1,15 @@
-import { Center, Button } from "@chakra-ui/react";
+import {
+  Center,
+  Button,
+  Spacer,
+  Flex,
+  Box,
+  HStack,
+  Text,
+} from "@chakra-ui/react";
 import Link from "next/link";
+import { useColorMode } from "@chakra-ui/react";
+import { DarkmodeButton } from "./darkmodeButton";
 
 interface TopBarButtonProps {
   buttonString: string;
@@ -24,16 +34,26 @@ const TopBarButton: React.FC<TopBarButtonProps> = ({ buttonString, url }) => {
 };
 
 export const TopBar = () => {
+  const { colorMode, toggleColorMode } = useColorMode();
   return (
     <Center
       width="100%"
       minWidth="1000px"
       borderBottom={`1px solid #999999`}
-      bg="#e9e9e9">
-      <Center height={"60px"} width="1000px" minWidth="1000px">
-        <TopBarButton buttonString="캐릭터" url="/" />
-        <TopBarButton buttonString="모험단" url="/adventure" />
-      </Center>
+      bg={`${colorMode === "light" ? "#e9e9e9" : "#1a202c"}`}>
+      <Flex
+        height={"60px"}
+        width="1000px"
+        minWidth="1000px"
+        alignItems={"center"}
+        justifyContent={"space-between"}>
+        <Text></Text>
+        <Flex>
+          <TopBarButton buttonString="캐릭터" url="/" />
+          <TopBarButton buttonString="모험단" url="/adventure" />
+        </Flex>
+        <DarkmodeButton />
+      </Flex>
     </Center>
   );
 };

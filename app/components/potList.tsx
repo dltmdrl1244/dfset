@@ -13,12 +13,15 @@ import {
   AccordionIcon,
 } from "@chakra-ui/react";
 import { ItemRarityBadge } from "./badges";
+import { useColorMode } from "@chakra-ui/react";
 
 interface PotListProps {
   potList: EquipmentType[];
 }
 
 export const PotList: React.FC<PotListProps> = ({ potList }) => {
+  const { colorMode, toggleColorMode } = useColorMode();
+
   return (
     <Box
       p={0}
@@ -29,7 +32,9 @@ export const PotList: React.FC<PotListProps> = ({ potList }) => {
       boxShadow="base">
       <Accordion allowToggle>
         <AccordionItem>
-          <AccordionButton bg="beige" p={3}>
+          <AccordionButton
+            bg={`${colorMode === "light" ? "beige" : "#1a202c"}`}
+            p={3}>
             <Box as="span" flex="1" textAlign="left">
               <Text as="b" size="2xl">
                 항아리깡 기록
