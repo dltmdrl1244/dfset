@@ -688,7 +688,9 @@ export default function CharacterPage() {
                 borderRadius="md">
                 <InfoIcon />
                 <Text fontSize={"xs"}>
-                  흑아 장비는 현재 조회되지 않습니다. 업데이트 예정입니다.
+                  흑아 장비는 현재 조회되지 않습니다. 업데이트 예정입니다.{" "}
+                  <br></br>
+                  레전더리 등급부터 조회됩니다.
                 </Text>
               </HStack>
               <Box // 캐릭터 상자
