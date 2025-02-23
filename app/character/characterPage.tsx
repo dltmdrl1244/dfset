@@ -529,6 +529,9 @@ export default function CharacterPage() {
 
         tempTimelines[i].item = weapon;
       } else {
+        if (newItem.set_id == null || newItem.slot_id == null) {
+          continue;
+        }
         // 비 무기
         const setItem: SetItem = {
           itemId: newItem.item_id,
