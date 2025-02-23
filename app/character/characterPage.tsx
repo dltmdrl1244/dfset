@@ -10,6 +10,8 @@ import {
   Button,
   HStack,
   useToast,
+  UnorderedList,
+  ListItem,
 } from "@chakra-ui/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -688,11 +690,21 @@ export default function CharacterPage() {
                 p={4}
                 borderRadius="md">
                 <InfoIcon />
-                <Text fontSize={"xs"}>
-                  흑아 장비는 현재 조회되지 않습니다. 업데이트 예정입니다.{" "}
-                  <br></br>
-                  레전더리 등급부터 조회됩니다.
-                </Text>
+                <UnorderedList>
+                  <ListItem>
+                    <Text fontSize={"xs"}>흑아 장비는 조회되지 않습니다.</Text>
+                  </ListItem>
+                  <ListItem>
+                    <Text fontSize={"xs"}>
+                      초월로 넘긴/넘겨받은 정보는 조회되지 않습니다.
+                    </Text>
+                  </ListItem>
+                  <ListItem>
+                    <Text fontSize={"xs"}>
+                      두 기능 모두 업데이트 예정입니다.
+                    </Text>
+                  </ListItem>
+                </UnorderedList>
               </HStack>
               <Box // 캐릭터 상자
                 p={4}

@@ -9,6 +9,10 @@ import {
   VStack,
   Grid,
   GridItem,
+  Spinner,
+  Box,
+  Text,
+  Flex,
 } from "@chakra-ui/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -25,6 +29,7 @@ export default function AdventurePage() {
   >([]);
   const [characterList, setCharacterList] = useState<Character[]>([]);
   const [tempAdventureName, setTempAdventureName] = useState<string>("");
+  const [characterLoaded, setCharacterLoaded] = useState<boolean>(false);
 
   useEffect(() => {
     const aName = searchParams.get("adventure");
@@ -69,8 +74,9 @@ export default function AdventurePage() {
           };
           tempSimpleCharacterList.push(newCharacter);
         });
-
         setCharacterBasicList(tempSimpleCharacterList);
+      } else {
+        setCharacterLoaded(true);
       }
     } catch (error) {
       console.error("error ,", error);
@@ -105,13 +111,17 @@ export default function AdventurePage() {
       }
     }
     setCharacterList(tempCharacterList);
+    setCharacterLoaded(true);
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    router.push(`/adventure?adventure=${tempAdventureName}`);
-    setCharacterList([]);
-    setAdventureName(tempAdventureName);
+    if (tempAdventureName !== adventureName) {
+      router.push(`/adventure?adventure=${tempAdventureName}`);
+      setCharacterList([]);
+      setAdventureName(tempAdventureName);
+      setCharacterLoaded(false);
+    }
   };
 
   const handleAdventureNameChange = (
@@ -149,17 +159,34 @@ export default function AdventurePage() {
             </HStack>
           </form>
         </Center>
-        <Grid templateColumns="repeat(4, 1fr)" gap={4} mt={5}>
-          {characterList.map((character, idx) => (
-            <GridItem key={`advCharacter${idx}`}>
-              <CharacterAdventureBox character={character} />
-            </GridItem>
-          ))}
-        </Grid>
-        {characterList.length > 0 && (
-          <Center mt={5}>
-            <AdventureAccordion adventureName={adventureName} />
-          </Center>
+        {characterLoaded ? (
+          <Box>
+            {characterList.length > 0 ? (
+              <Grid templateColumns="repeat(4, 1fr)" gap={4} mt={5}>
+                {characterList.map((character, idx) => (
+                  <GridItem key={`advCharacter${idx}`}>
+                    <CharacterAdventureBox character={character} />
+                  </GridItem>
+                ))}
+              </Grid>
+            ) : (
+              <Center>
+                <Text>
+                  {adventureName} 모험단의 캐릭터를 찾을 수 없습니다. <br></br>
+                  한 번이라도 검색된 캐릭터만 표시됩니다.
+                </Text>
+              </Center>
+            )}
+            {characterList.length > 0 && (
+              <Center mt={5}>
+                <AdventureAccordion adventureName={adventureName} />
+              </Center>
+            )}
+          </Box>
+        ) : (
+          <Flex gap={4}>
+            <Spinner /> <Text>모험단 정보를 가져오는 중...</Text>
+          </Flex>
         )}
       </VStack>
     </BaseLayout>
