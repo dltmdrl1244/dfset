@@ -644,11 +644,12 @@ export default function CharacterPage() {
   }
 
   function convertToKSTMinute(isoString: string) {
-    const currentTime = dayjs(isoString);
+    const currentTime = dayjs(isoString.slice(0, isoString.length - 1));
+
     currentTime.add(9, "hours");
     return `${currentTime.get("year")}-${String(
-      currentTime.get("month")
-    ).padStart(2, "0")}-${String(currentTime.get("day")).padStart(
+      currentTime.get("month") + 1
+    ).padStart(2, "0")}-${String(currentTime.get("date")).padStart(
       2,
       "0"
     )} ${String(currentTime.get("hour")).padStart(2, "0")}:${String(
