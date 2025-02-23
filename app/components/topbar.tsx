@@ -49,8 +49,8 @@ export const TopBar = () => {
         justifyContent={"space-between"}>
         <Text></Text>
         <Flex>
-          <TopBarButton buttonString="캐릭터" url="/" />
-          <TopBarButton buttonString="모험단" url="/adventure" />
+          <TopBarButton buttonString="캐릭터 검색" url="/" />
+          <TopBarButton buttonString="모험단 검색" url="/adventure" />
         </Flex>
         <DarkmodeButton />
       </Flex>
