@@ -21,6 +21,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning>
       <body className={notoSansKr.className}>
+        <Analytics />
         <ChakraProvider>{children}</ChakraProvider>
       </body>
     </html>
