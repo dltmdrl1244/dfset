@@ -23,7 +23,9 @@ export default function Footer() {
               문의하기
             </Button>
           </Link>
-          <Image src="/poweredby.png" />
+          <Link href="https://developers.neople.co.kr" target="blank">
+            <Image src="/poweredby.png" />
+          </Link>
         </HStack>
       </Center>
     </Center>
