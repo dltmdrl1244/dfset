@@ -22,6 +22,7 @@ import {
 } from "../components/badges";
 import { itemSets } from "../context/setIds";
 import { itemSlots } from "../context/slotIds";
+import { useColorMode } from "@chakra-ui/react";
 
 interface ItemObtainBadgeProps {
   obtainCode: number;
@@ -85,6 +86,7 @@ export const ItemIcon: React.FC<ItemIconProps> = ({
     historyItem === undefined
       ? `/set115/1.png`
       : `https://img-api.neople.co.kr/df/items/${historyItem?.highest.itemId}`;
+  const { colorMode, toggleColorMode } = useColorMode();
 
   return (
     <Center>
@@ -106,12 +108,12 @@ export const ItemIcon: React.FC<ItemIconProps> = ({
           </PopoverTrigger>
           <PopoverContent
             border={`2px solid black`}
-            bgColor={"beige"}
+            bg={`${colorMode === "light" ? "beige" : "#1a202c"}`}
             width="270px">
             <PopoverArrow border={`2px solid black`} />
             <PopoverHeader>
               <Text as="b" fontSize={"sm"}>
-                {itemSets[setIdx].setName}: {itemSlots[slotIdx].slotName}
+                {itemSets[setIdx].setName} : {itemSlots[slotIdx].slotName}
               </Text>
             </PopoverHeader>
             <PopoverBody overflowY="auto" maxHeight="200px">
