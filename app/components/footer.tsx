@@ -24,7 +24,7 @@ export default function Footer() {
             </Button>
           </Link>
           <Link href="https://developers.neople.co.kr" target="blank">
-            {/* <Image src="/poweredby.png" /> */}
+            <Image src="/apilogo_crop.png" width={"170px"} />
           </Link>
         </HStack>
       </Center>
