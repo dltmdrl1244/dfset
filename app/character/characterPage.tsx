@@ -23,6 +23,7 @@ import { PotList } from "../components/potList";
 import Link from "next/link";
 import BaseLayout from "../components/baseLayout";
 import { InfoIcon } from "@chakra-ui/icons";
+import { equipment115 } from "@/public/equipment115";
 
 interface TimelineApiResponse {
   code: number;
@@ -115,6 +116,11 @@ export default function CharacterPage() {
       updateItemDetails();
     }
   }, [itemTimeline]);
+
+  function getItemInfoFromJSON(itemId: string) {
+    const foundItem = equipment115.find((item) => item.item_id === itemId);
+    return foundItem ? foundItem : null;
+  }
 
   const getCharacterBasicInfo = async () => {
     const params = new URLSearchParams();
@@ -476,18 +482,41 @@ export default function CharacterPage() {
     const timelineResult: TimelineInfo[] = [];
     for (let i = 0; i < tempTimelines.length; i++) {
       const timeline = tempTimelines[i];
-      const response = await fetch(
-        `/api/query/item?itemId=${timeline.item.itemId}`
-      );
-      const data = await response.json();
 
-      if (
-        (data.data == undefined && !Array.isArray(data.data)) ||
-        data.data.length <= 0
-      ) {
+      var newItem: EquipmentResponse | null = getItemInfoFromJSON(
+        timeline.item.itemId
+      );
+      if (!newItem) {
+        const response = await fetch(
+          `/api/query/item?itemId=${timeline.item.itemId}`
+        );
+        const data = await response.json();
+
+        if (
+          (data.data == undefined && !Array.isArray(data.data)) ||
+          data.data.length <= 0
+        ) {
+          continue;
+        }
+        newItem = data.data[0];
+      }
+
+      if (!newItem) {
         continue;
       }
-      const newItem: EquipmentResponse = data.data[0];
+
+      // const response = await fetch(
+      //   `/api/query/item?itemId=${timeline.item.itemId}`
+      // );
+      // const data = await response.json();
+
+      // if (
+      //   (data.data == undefined && !Array.isArray(data.data)) ||
+      //   data.data.length <= 0
+      // ) {
+      //   continue;
+      // }
+      // const newItem: EquipmentResponse = data.data[0];
 
       if (newItem.item_type_detail_id !== null) {
         // 무기

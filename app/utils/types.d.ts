@@ -46,9 +46,9 @@ interface EquipmentResponse {
   item_id: string;
   item_name: string;
   rarity: string;
-  set_id: string;
-  slot_id: string;
-  item_type_detail_id: string;
+  set_id: string | null;
+  slot_id: string | null;
+  item_type_detail_id: string | null;
   is_fusion: boolean;
   is_distinct: boolean;
 }
