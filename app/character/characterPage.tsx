@@ -94,6 +94,7 @@ export default function CharacterPage() {
     const sId = searchParams.get("sId");
     const cId = searchParams.get("cId");
     if (!sId || !cId) {
+      router.push("/");
       return;
     }
 
@@ -682,7 +683,7 @@ export default function CharacterPage() {
 
     var currentTime = dayjs(isoString.slice(0, isoString.length - 1));
 
-    currentTime = currentTime.add(18, "hours");
+    currentTime = currentTime.add(9, "hours");
     return `${currentTime.get("year")}-${String(
       currentTime.get("month") + 1
     ).padStart(2, "0")}-${String(currentTime.get("date")).padStart(
