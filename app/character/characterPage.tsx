@@ -123,7 +123,6 @@ export default function CharacterPage() {
   useEffect(() => {
     if (character && characterHistory) {
       testMakeItemHistory();
-      testSaveCharacterHistory();
     }
   }, [characterHistory]);
 
@@ -140,8 +139,6 @@ export default function CharacterPage() {
     try {
       const response = await fetch(`api/query/character?${params.toString()}`);
       const data = await response.json();
-
-      console.log(data.data);
       // 캐릭터 검색
       if (data.data) {
         // 있으면 바로 꺼내서 setCharacter
@@ -430,6 +427,7 @@ export default function CharacterPage() {
           testMakeCharacterHistory(rv);
         if (testCharacterHistory) {
           setCharacterHistory(testCharacterHistory);
+          testSaveCharacterHistory(testCharacterHistory);
           setLatestUpdate(dayjs().toISOString());
         }
       }
@@ -521,9 +519,12 @@ export default function CharacterPage() {
     }
 
     setCharacterHistory(tempCharacterHistory);
+    testSaveCharacterHistory(tempCharacterHistory);
   }
 
-  async function testSaveCharacterHistory() {
+  async function testSaveCharacterHistory(
+    characterHistory: TestCharacterHistory
+  ) {
     if (!characterHistory || !character) {
       return;
     }
@@ -538,6 +539,11 @@ export default function CharacterPage() {
           characterId: character?.characterId,
           histories: characterHistory,
         }),
+      });
+      toast({
+        title: "캐릭터 정보가 갱신되었습니다.",
+        status: "success",
+        isClosable: true,
       });
     } catch (error) {
       console.error(error);
