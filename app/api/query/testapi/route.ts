@@ -8,6 +8,9 @@ export async function GET(req: NextRequest) {
   const apikey = process.env.NEXT_PUBLIC_DFSET_APIKEY || "";
   const sql = neon(`${process.env.DATABASE_URL}`);
 
+  if (!itemId) {
+    return;
+  }
   try {
     // console.log(`${defaultAPIURL}/items/`);
     const params = new URLSearchParams();
