@@ -1,5 +1,6 @@
 import { Box, Text, Image } from "@chakra-ui/react";
 import Link from "next/link";
+import { getServerName } from "../context/serverOptions";
 
 export default function CharacterBox(props: { character: Character }) {
   // 파라미터 타입 지정
@@ -18,7 +19,7 @@ export default function CharacterBox(props: { character: Character }) {
       <Box p={4} borderWidth="1px" borderRadius="md" boxShadow="base">
         <Image src={characterImageUrl} alt={character.characterName} />
         <Text>
-          {character.characterName} ({character.serverName})
+          {character.characterName} ({getServerName(character.serverId)})
         </Text>
         <Text>{character.jobName}</Text>
       </Box>

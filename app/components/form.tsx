@@ -85,7 +85,6 @@ export default function Form({
       const characters: Character[] = data.data.rows.map(
         (item: CharacterResponse): Character => ({
           serverId: item.serverId,
-          serverName: getServerName(item.serverId),
           characterName: item.characterName,
           characterId: item.characterId,
           jobName: item.jobGrowName,
