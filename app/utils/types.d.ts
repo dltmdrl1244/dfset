@@ -60,11 +60,11 @@ interface CharacterResponse {
   character_name: string;
   adventure_name: string;
   job_name: string;
+  create_time: string;
 }
 
 interface Character {
   serverId: string;
-  serverName: string;
   characterId: string;
   characterName: string;
   adventureName: string;

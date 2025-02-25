@@ -44,9 +44,6 @@ interface TimelineApiResponseData {
 export default function CharacterPage() {
   const searchParams = useSearchParams();
 
-  let serverId: string = "";
-  let characterId: string = "";
-
   const [character, setCharacter] = useState<Character | null>(null);
   const [infoLoaded, setInfoLoaded] = useState<boolean>(false);
   const [latestUpdate, setLatestUpdate] = useState<string>("");
@@ -111,18 +108,14 @@ export default function CharacterPage() {
       return;
     }
 
-    serverId = sId;
-    characterId = cId;
+    // serverId = sId;
+    // characterId = cId;
 
     getCharacterBasicInfo();
   }, [searchParams]);
 
   useEffect(() => {
     if (character) {
-      // getAdventureInfo();
-      // getCharacterTimeline();
-      // getCharacterHistory();
-
       testGetCharacterHistory();
     }
   }, [character]);
@@ -130,32 +123,30 @@ export default function CharacterPage() {
   useEffect(() => {
     if (character && characterHistory) {
       testMakeItemHistory();
+      testSaveCharacterHistory();
     }
   }, [characterHistory]);
 
-  // useEffect(() => {
-  //   if (itemTimeline.length > 0) {
-  //     updateItemDetails();
-  //   }
-  // }, [itemTimeline]);
-
-  function getItemInfoFromJSON(itemId: string) {
-    const foundItem = equipments.find((item) => item.item_id === itemId);
-    return foundItem ? foundItem : null;
-  }
-
   const getCharacterBasicInfo = async () => {
+    const serverId = searchParams.get("sId");
+    const characterId = searchParams.get("cId");
+
+    if (!serverId || !characterId) {
+      router.push("/");
+      return;
+    }
     const params = new URLSearchParams();
     params.set("characterId", characterId);
     try {
       const response = await fetch(`api/query/character?${params.toString()}`);
       const data = await response.json();
+
+      console.log(data.data);
       // 캐릭터 검색
       if (data.data) {
         // 있으면 바로 꺼내서 setCharacter
         const newCharacter: Character = {
           serverId: data.data.server_id,
-          serverName: data.data.server_name,
           characterId: data.data.character_id,
           characterName: data.data.character_name,
           jobName: data.data.job_name,
@@ -175,7 +166,6 @@ export default function CharacterPage() {
         const getData = await getResponse.json();
         const newCharacter: Character = {
           serverId: getData.data.serverId,
-          serverName: getServerName(getData.data.serverId),
           characterId: getData.data.characterId,
           characterName: getData.data.characterName,
           jobName: getData.data.jobGrowName,
@@ -440,7 +430,6 @@ export default function CharacterPage() {
           testMakeCharacterHistory(rv);
         if (testCharacterHistory) {
           setCharacterHistory(testCharacterHistory);
-          testSaveCharacterHistory(testCharacterHistory);
           setLatestUpdate(dayjs().toISOString());
         }
       }
@@ -450,10 +439,92 @@ export default function CharacterPage() {
     }
   }
 
-  async function testSaveCharacterHistory(
-    testCharacterHistory: TestCharacterHistory
-  ) {
-    if (!testCharacterHistory || !character) {
+  async function updateCharacterHistory() {
+    if (!character) {
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `api/query/history?characterId=${character.characterId}`
+      );
+      const data = await response.json();
+
+      if (data.data) {
+        const createTime: string = data.data.create_time;
+        const rv: TestHistoryItem[] = await getCharacterTimelineFromAPI(
+          createTime
+        );
+
+        rv.sort((a, b) => {
+          const dateA = dayjs(a.date);
+          const dateB = dayjs(b.date);
+          return dateA.isBefore(dateB, "minute") ? -1 : 1;
+        });
+        console.log("새롭게 가져온 정보들 : ", rv);
+        console.log(characterHistory);
+        addCharacterHistory(rv);
+        setLatestUpdate(dayjs().toISOString());
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  function addCharacterHistory(historyItems: TestHistoryItem[]) {
+    if (historyItems.length <= 0 || !character || !characterHistory) {
+      return;
+    }
+
+    let tempCharacterHistory = characterHistory;
+
+    for (const historyItem of historyItems) {
+      const itemKey: number =
+        historyItem.item.setIdx * itemSets.length + historyItem.item.slotIdx;
+
+      // highest 갱신
+      if (
+        !(itemKey in tempCharacterHistory.highest) ||
+        historyItem.item.rarity > tempCharacterHistory.highest[itemKey].rarity
+      ) {
+        tempCharacterHistory.highest[itemKey] = {
+          itemId: historyItem.item.itemId,
+          rarity: historyItem.item.rarity,
+        };
+      }
+      // histories에 추가
+      if (itemKey in tempCharacterHistory.histories) {
+        tempCharacterHistory.histories[itemKey].push(historyItem);
+      } else {
+        tempCharacterHistory.histories[itemKey] = [historyItem];
+      }
+
+      // 3. itemCount 갱신
+      tempCharacterHistory.itemCount[historyItem.item.rarity]++;
+
+      // 4. weaponList
+      if (historyItem.item.weaponType != "") {
+        tempCharacterHistory.weaponList.push({
+          itemId: historyItem.item.itemId,
+          itemName: historyItem.item.itemName,
+          rarity: historyItem.item.rarity,
+        });
+      }
+
+      // 5. potList
+      if (historyItem.obtainCode === 504) {
+        tempCharacterHistory.potList.push({
+          itemId: historyItem.item.itemId,
+          itemName: historyItem.item.itemName,
+          rarity: historyItem.item.rarity,
+        });
+      }
+    }
+
+    setCharacterHistory(tempCharacterHistory);
+  }
+
+  async function testSaveCharacterHistory() {
+    if (!characterHistory || !character) {
       return;
     }
 
@@ -465,7 +536,7 @@ export default function CharacterPage() {
         },
         body: JSON.stringify({
           characterId: character?.characterId,
-          histories: testCharacterHistory,
+          histories: characterHistory,
         }),
       });
     } catch (error) {
@@ -576,7 +647,6 @@ export default function CharacterPage() {
 
   /*
   Neople API를 호출해서 타임라인 정보를 가져옴.
-  TODO : 최근 타임라인이 DB에 있다면 갱신 시 startDate를 last update time으로 설정 
   */
   const getCharacterTimelineFromAPI = async (startDate?: string) => {
     const tempTimelines: TestHistoryItem[] = [];
@@ -629,23 +699,6 @@ export default function CharacterPage() {
 
               tempTimelines.push(timelineInfo);
             }
-            // const newItems: TimelineInfo[] = data.data.timeline.rows.map(
-            //   (row: TestTimelineResponse): TimelineInfo => ({
-            //     item: {
-            //       itemId: row.data.itemId,
-            //       itemName: row.data.itemName,
-            //       rarity: rarityIndex.indexOf(row.data.itemRarity),
-            //       // 나머지 정보들은 (slotIdx, weaponTypeId 등) 아직 채워넣지 않음
-            //     },
-            //     obtainCode: row.code,
-            //     date: row.date,
-            //     channelName: row.code != 513 ? row.data.channelName : undefined,
-            //     channelNo: row.code != 513 ? row.data.channelNo : undefined,
-            //     dungeonName: row.code != 504 ? row.data.dungeonName : undefined,
-            //   })
-            // );
-
-            // tempTimelines.push(...newItems);
 
             if (data.data.timeline.next != null) {
               await fetchData(startDate, endDate, data.data.timeline.next);
@@ -690,76 +743,6 @@ export default function CharacterPage() {
       currentStartDate = currentEndDate.add(1, "day").set("h", 0).set("m", 0);
     }
 
-    // // 디테일 값 수정
-    // const timelineResult: TimelineInfo[] = [];
-    // for (let i = 0; i < tempTimelines.length; i++) {
-    //   const timeline = tempTimelines[i];
-
-    //   var newItem: EquipmentResponse | null = getItemInfoFromJSON(
-    //     timeline.item.itemId
-    //   );
-    //   if (!newItem) {
-    //     const response = await fetch(
-    //       `/api/query/item?itemId=${timeline.item.itemId}`
-    //     );
-    //     const data = await response.json();
-
-    //     if (
-    //       (data.data == undefined && !Array.isArray(data.data)) ||
-    //       data.data.length <= 0
-    //     ) {
-    //       continue;
-    //     }
-    //     newItem = data.data[0];
-    //   }
-
-    //   if (!newItem) {
-    //     continue;
-    //   }
-
-    //   // const response = await fetch(
-    //   //   `/api/query/item?itemId=${timeline.item.itemId}`
-    //   // );
-    //   // const data = await response.json();
-
-    //   // if (
-    //   //   (data.data == undefined && !Array.isArray(data.data)) ||
-    //   //   data.data.length <= 0
-    //   // ) {
-    //   //   continue;
-    //   // }
-    //   // const newItem: EquipmentResponse = data.data[0];
-
-    //   if (newItem.item_type_detail_id !== null) {
-    //     // 무기
-    //     const weapon: Weapon = {
-    //       itemId: newItem.item_id,
-    //       itemName: newItem.item_name,
-    //       rarity: rarityIndex.indexOf(newItem.rarity),
-    //       itemTypeDetailId: newItem.item_type_detail_id,
-    //     };
-
-    //     tempTimelines[i].item = weapon;
-    //   } else {
-    //     if (newItem.set_id == null || newItem.slot_id == null) {
-    //       continue;
-    //     }
-    //     // 비 무기
-    //     const setItem: SetItem = {
-    //       itemId: newItem.item_id,
-    //       itemName: newItem.item_name,
-    //       rarity: rarityIndex.indexOf(newItem.rarity),
-    //       setId: newItem.set_id,
-    //       setIdx: setIdxDict[newItem.set_id],
-    //       slotId: newItem.slot_id,
-    //       slotIdx: slotIdxDict[newItem.slot_id],
-    //     };
-
-    //     tempTimelines[i].item = setItem;
-    //   }
-
-    //   timelineResult.push(tempTimelines[i]);
-    // }
     return tempTimelines;
   };
 
@@ -927,7 +910,7 @@ export default function CharacterPage() {
         isClosable: true,
       });
     } else {
-      updateCharacterTimeline();
+      updateCharacterHistory();
     }
   }
 
@@ -937,7 +920,7 @@ export default function CharacterPage() {
 
   return (
     <BaseLayout>
-      {infoLoaded ? (
+      {infoLoaded && character ? (
         <Center gap={4} flexWrap={"wrap"} p={5}>
           {/* <Center> */}
           <HStack gap={10}>
@@ -1000,7 +983,7 @@ export default function CharacterPage() {
                     )}
                   </Center>
                   <Center>
-                    {character?.serverName} | {character?.jobName}
+                    {getServerName(character?.serverId)} | {character?.jobName}
                   </Center>
                   <Box mt={3} borderTop={`1px solid #696969`} p={4}>
                     <Box>

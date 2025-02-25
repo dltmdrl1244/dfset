@@ -12,10 +12,9 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const rv = await sql(
-      "SELECT * FROM character_basic WHERE character_id = ($1)",
-      [characterId]
-    );
+    const rv = await sql("SELECT * FROM character WHERE character_id = ($1)", [
+      characterId,
+    ]);
 
     if (rv.length > 0) {
       return NextResponse.json({ data: rv[0], message: "OK" }, { status: 200 });
@@ -48,12 +47,11 @@ export async function POST(req: NextRequest) {
 
   try {
     await sql(
-      "INSERT INTO character_basic (character_id, character_name, server_id, server_name, adventure_name, job_name) VALUES ($1, $2, $3, $4, $5, $6)",
+      "INSERT INTO character (character_id, character_name, server_id, adventure_name, job_name) VALUES ($1, $2, $3, $4, $5)",
       [
         character.characterId,
         character.characterName,
         character.serverId,
-        character.serverName,
         character.adventureName,
         character.jobName,
       ]

@@ -24,15 +24,9 @@ export default function AdventurePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [adventureName, setAdventureName] = useState<string>("");
-  const [characterBasicList, setCharacterBasicList] = useState<
-    SimpleCharacter[]
-  >([]);
   const [characterList, setCharacterList] = useState<Character[]>([]);
   const [tempAdventureName, setTempAdventureName] = useState<string>("");
   const [characterLoaded, setCharacterLoaded] = useState<boolean>(false);
-
-  const [adventureItemHistory, setAdventureItemHistory] =
-    useState<TestAdventureCharacterHistory | null>(null);
 
   useEffect(() => {
     const aName = searchParams.get("adventure");
@@ -50,80 +44,34 @@ export default function AdventurePage() {
     }
   }, [adventureName]);
 
-  useEffect(() => {
-    if (characterBasicList.length <= 0) {
-      return;
-    }
-    getCharacterBasicInfo();
-  }, [characterBasicList]);
-
-  useEffect(() => {
-    if (characterList.length <= 0) {
-      return;
-    }
-
-    testMakeAdventureItemHistory();
-  }, [characterList]);
-
   async function loadAdventureInfo(aName: string) {
     const params = new URLSearchParams();
     params.set("adventureName", aName);
 
-    const tempSimpleCharacterList: SimpleCharacter[] = [];
+    const tempCharacterList: Character[] = [];
 
     try {
       const response = await fetch(`api/query/adventure?${params.toString()}`);
       const data = await response.json();
 
       if (data.data && Array.isArray(data.data)) {
-        data.data.map((character: SimpleCharacterResponse) => {
-          const newCharacter: SimpleCharacter = {
+        data.data.map((character: CharacterResponse) => {
+          const newCharacter: Character = {
             serverId: character.server_id,
             characterId: character.character_id,
             characterName: character.character_name,
             adventureName: character.adventure_name,
+            jobName: character.job_name,
           };
-          tempSimpleCharacterList.push(newCharacter);
+          tempCharacterList.push(newCharacter);
         });
-        setCharacterBasicList(tempSimpleCharacterList);
-      } else {
-        setCharacterLoaded(true);
+        setCharacterList(tempCharacterList);
       }
+      setCharacterLoaded(true);
     } catch (error) {
       console.error("error ,", error);
     }
   }
-
-  const getCharacterBasicInfo = async () => {
-    if (characterBasicList.length <= 0) {
-      return;
-    }
-    const tempCharacterList: Character[] = [];
-    for (const character of characterBasicList) {
-      const param = new URLSearchParams();
-      param.set("characterId", character.characterId);
-      try {
-        const response = await fetch(`api/query/character?${param.toString()}`);
-        const data = await response.json();
-        if (data.data) {
-          const newCharacter: Character = {
-            serverId: data.data.server_id,
-            serverName: data.data.server_name,
-            characterId: data.data.character_id,
-            characterName: data.data.character_name,
-            adventureName: data.data.adventure_name,
-            jobName: data.data.job_name,
-          };
-          tempCharacterList.push(newCharacter);
-        }
-      } catch (error) {
-        console.error(error);
-        continue;
-      }
-    }
-    setCharacterList(tempCharacterList);
-    setCharacterLoaded(true);
-  };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -140,44 +88,6 @@ export default function AdventurePage() {
   ) => {
     setTempAdventureName(event.target.value);
   };
-
-  async function testMakeAdventureItemHistory() {
-    if (characterList.length <= 0) {
-      return;
-    }
-    const tempAdventureItemHistory: TestAdventureCharacterHistory = {
-      highest: {},
-      characters: {},
-    };
-
-    for (const character of characterList) {
-      const response = await fetch(
-        `api/query/testHistory?characterId=${character.characterId}`
-      );
-      const data = await response.json();
-
-      if (data.data) {
-        // console.log(data.data[0]);
-        const characterHistory: TestCharacterHistory =
-          data.data[0].history_dict;
-
-        tempAdventureItemHistory.characters[character.characterName] =
-          characterHistory;
-
-        Object.entries(characterHistory.highest).map(([key, highestInfo]) => {
-          const itemKey = Number(key);
-          if (
-            !(itemKey in tempAdventureItemHistory.highest) ||
-            highestInfo.rarity >
-              tempAdventureItemHistory.highest[itemKey].rarity
-          ) {
-            tempAdventureItemHistory.highest[itemKey] = highestInfo;
-          }
-        });
-      }
-    }
-    setAdventureItemHistory(tempAdventureItemHistory);
-  }
 
   return (
     <BaseLayout>
@@ -219,7 +129,7 @@ export default function AdventurePage() {
                 ))}
               </Grid>
             ) : (
-              <Center>
+              <Center mt={10}>
                 <Text>
                   {adventureName} 모험단의 캐릭터를 찾을 수 없습니다. <br></br>
                   한 번이라도 검색된 캐릭터만 표시됩니다.
@@ -233,7 +143,7 @@ export default function AdventurePage() {
             )}
           </Box>
         ) : (
-          <Flex gap={4}>
+          <Flex gap={4} mt={10}>
             <Spinner /> <Text>모험단 정보를 가져오는 중...</Text>
           </Flex>
         )}
