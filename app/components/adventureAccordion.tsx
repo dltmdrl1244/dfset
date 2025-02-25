@@ -17,98 +17,145 @@ import { useEffect, useState } from "react";
 import { useColorMode } from "@chakra-ui/react";
 
 interface AdventureAccordionProps {
-  adventureName: string;
+  characterList: Character[];
 }
 
 export const AdventureAccordion: React.FC<AdventureAccordionProps> = ({
-  adventureName,
+  characterList,
 }) => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const [characterNameToItemHistory, setCharacterNameToItemHistory] =
-    useState<CharacterNameToItemHistory>({});
-  const [adventureItemHistory, setAdventureItemHistory] = useState<ItemHistory>(
-    {}
-  );
+  const [adventureItemHistory, setAdventureItemHistory] =
+    useState<TestAdventureCharacterHistory>({
+      highest: {},
+      characters: {},
+    });
 
-  useEffect(() => {
-    if (Object.keys(characterNameToItemHistory).length <= 0) {
+  // useEffect(() => {
+  //   testMakeAdventureItemHistory();
+  // }, []);
+  // const [characterNameToItemHistory, setCharacterNameToItemHistory] =
+  //   useState<CharacterNameToItemHistory>({});
+  // const [adventureItemHistory, setAdventureItemHistory] = useState<ItemHistory>(
+  //   {}
+  // );
+
+  // useEffect(() => {
+  //   if (Object.keys(characterNameToItemHistory).length <= 0) {
+  //     return;
+  //   }
+
+  //   makeAdventureItemTable();
+  // }, [characterNameToItemHistory]);
+
+  // function makeAdventureItemTable() {
+  //   if (Object.keys(characterNameToItemHistory).length <= 0) {
+  //     return;
+  //   }
+  //   const tempAdventureItemHistory: ItemHistory = {};
+  //   for (const [characterName, historyDict] of Object.entries(
+  //     characterNameToItemHistory
+  //   )) {
+  //     // historyDict는 ItemHistory 타입
+  //     for (const [key, value] of Object.entries(historyDict)) {
+  //       const itemKey: number = Number(key); // 아이템키
+  //       const historyItem: HistoryItem = value; // HistoryItem
+
+  //       if (itemKey in tempAdventureItemHistory) {
+  //         tempAdventureItemHistory[itemKey].histories.push({
+  //           characterName: characterName,
+  //           timelines: historyItem.histories[0].timelines,
+  //         });
+  //         if (
+  //           historyItem.highest.rarity >
+  //           tempAdventureItemHistory[itemKey].highest.rarity
+  //         ) {
+  //           tempAdventureItemHistory[itemKey].highest = historyItem.highest;
+  //         }
+  //       } else {
+  //         tempAdventureItemHistory[itemKey] = {
+  //           histories: [
+  //             {
+  //               characterName: characterName,
+  //               timelines: historyItem.histories[0].timelines,
+  //             },
+  //           ],
+  //           highest: historyItem.highest,
+  //         };
+  //       }
+  //     }
+  //   }
+  //   setAdventureItemHistory(tempAdventureItemHistory);
+  // }
+
+  // async function getAdventureItemTable() {
+  //   if (!adventureName) {
+  //     return;
+  //   }
+  //   const tempCharacterNameToItemHistory: CharacterNameToItemHistory = {};
+  //   const params = new URLSearchParams();
+  //   params.set("adventureName", adventureName);
+
+  //   try {
+  //     const response = await fetch(`api/query/adventure?${params.toString()}`);
+  //     const data = await response.json();
+
+  //     for (const character of data.data) {
+  //       const characterparam = new URLSearchParams();
+  //       characterparam.set("characterId", character.character_id);
+
+  //       const characterResponse = await fetch(
+  //         `api/query/history?${characterparam.toString()}`
+  //       );
+  //       const characterData = await characterResponse.json();
+
+  //       if (characterData.data && characterData.data.history_dict) {
+  //         tempCharacterNameToItemHistory[character.character_name] =
+  //           characterData.data.history_dict;
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+
+  //   setCharacterNameToItemHistory(tempCharacterNameToItemHistory);
+  // }
+
+  async function testMakeAdventureItemHistory() {
+    if (characterList.length <= 0) {
       return;
     }
+    const tempAdventureItemHistory: TestAdventureCharacterHistory = {
+      highest: {},
+      characters: {},
+    };
 
-    makeAdventureItemTable();
-  }, [characterNameToItemHistory]);
+    for (const character of characterList) {
+      const response = await fetch(
+        `api/query/testHistory?characterId=${character.characterId}`
+      );
+      const data = await response.json();
 
-  function makeAdventureItemTable() {
-    if (Object.keys(characterNameToItemHistory).length <= 0) {
-      return;
-    }
-    const tempAdventureItemHistory: ItemHistory = {};
-    for (const [characterName, historyDict] of Object.entries(
-      characterNameToItemHistory
-    )) {
-      // historyDict는 ItemHistory 타입
-      for (const [key, value] of Object.entries(historyDict)) {
-        const itemKey: number = Number(key); // 아이템키
-        const historyItem: HistoryItem = value; // HistoryItem
+      if (data.data) {
+        // console.log(data.data[0]);
+        const characterHistory: TestCharacterHistory =
+          data.data[0].history_dict;
 
-        if (itemKey in tempAdventureItemHistory) {
-          tempAdventureItemHistory[itemKey].histories.push({
-            characterName: characterName,
-            timelines: historyItem.histories[0].timelines,
-          });
+        tempAdventureItemHistory.characters[character.characterName] =
+          characterHistory;
+
+        Object.entries(characterHistory.highest).map(([key, highestInfo]) => {
+          const itemKey = Number(key);
           if (
-            historyItem.highest.rarity >
-            tempAdventureItemHistory[itemKey].highest.rarity
+            !(itemKey in tempAdventureItemHistory.highest) ||
+            highestInfo.rarity >
+              tempAdventureItemHistory.highest[itemKey].rarity
           ) {
-            tempAdventureItemHistory[itemKey].highest = historyItem.highest;
+            tempAdventureItemHistory.highest[itemKey] = highestInfo;
           }
-        } else {
-          tempAdventureItemHistory[itemKey] = {
-            histories: [
-              {
-                characterName: characterName,
-                timelines: historyItem.histories[0].timelines,
-              },
-            ],
-            highest: historyItem.highest,
-          };
-        }
+        });
       }
     }
     setAdventureItemHistory(tempAdventureItemHistory);
-  }
-
-  async function getAdventureItemTable() {
-    if (!adventureName) {
-      return;
-    }
-    const tempCharacterNameToItemHistory: CharacterNameToItemHistory = {};
-    const params = new URLSearchParams();
-    params.set("adventureName", adventureName);
-
-    try {
-      const response = await fetch(`api/query/adventure?${params.toString()}`);
-      const data = await response.json();
-
-      for (const character of data.data) {
-        const characterparam = new URLSearchParams();
-        characterparam.set("characterId", character.character_id);
-
-        const characterResponse = await fetch(
-          `api/query/history?${characterparam.toString()}`
-        );
-        const characterData = await characterResponse.json();
-
-        if (characterData.data && characterData.data.history_dict) {
-          tempCharacterNameToItemHistory[character.character_name] =
-            characterData.data.history_dict;
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    }
-
-    setCharacterNameToItemHistory(tempCharacterNameToItemHistory);
   }
 
   return (
@@ -142,12 +189,12 @@ export const AdventureAccordion: React.FC<AdventureAccordionProps> = ({
               </ListItem>
             </UnorderedList>
             <Flex direction="column" gap={2} mt={2}>
-              <Button colorScheme="teal" onClick={getAdventureItemTable}>
+              <Button colorScheme="teal" onClick={testMakeAdventureItemHistory}>
                 조회
               </Button>
               <ItemTable
-                itemHistory={adventureItemHistory}
                 isAdventure={true}
+                testItemHistory={adventureItemHistory}
               />
             </Flex>
           </AccordionPanel>

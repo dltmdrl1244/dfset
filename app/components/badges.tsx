@@ -16,7 +16,7 @@ export const ServerBadge: React.FC<ServerBadgeProps> = ({ serverId }) => {
 
 export const LegendaryBadge = () => {
   return (
-    <Badge bgColor={"#FF7800"} variant="solid" fontSize="sm">
+    <Badge bgColor={"#b25400"} variant="solid" fontSize="sm">
       레전
     </Badge>
   );

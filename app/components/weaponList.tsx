@@ -16,7 +16,7 @@ import { ItemRarityBadge } from "./badges";
 import { useColorMode } from "@chakra-ui/react";
 
 interface WeaponListProps {
-  weaponList: Weapon[];
+  weaponList: SimpleEquipment[];
 }
 
 export const WeaponList: React.FC<WeaponListProps> = ({ weaponList }) => {

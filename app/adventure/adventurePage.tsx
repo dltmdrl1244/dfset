@@ -31,6 +31,9 @@ export default function AdventurePage() {
   const [tempAdventureName, setTempAdventureName] = useState<string>("");
   const [characterLoaded, setCharacterLoaded] = useState<boolean>(false);
 
+  const [adventureItemHistory, setAdventureItemHistory] =
+    useState<TestAdventureCharacterHistory | null>(null);
+
   useEffect(() => {
     const aName = searchParams.get("adventure");
     if (!aName) {
@@ -53,6 +56,14 @@ export default function AdventurePage() {
     }
     getCharacterBasicInfo();
   }, [characterBasicList]);
+
+  useEffect(() => {
+    if (characterList.length <= 0) {
+      return;
+    }
+
+    testMakeAdventureItemHistory();
+  }, [characterList]);
 
   async function loadAdventureInfo(aName: string) {
     const params = new URLSearchParams();
@@ -130,6 +141,44 @@ export default function AdventurePage() {
     setTempAdventureName(event.target.value);
   };
 
+  async function testMakeAdventureItemHistory() {
+    if (characterList.length <= 0) {
+      return;
+    }
+    const tempAdventureItemHistory: TestAdventureCharacterHistory = {
+      highest: {},
+      characters: {},
+    };
+
+    for (const character of characterList) {
+      const response = await fetch(
+        `api/query/testHistory?characterId=${character.characterId}`
+      );
+      const data = await response.json();
+
+      if (data.data) {
+        // console.log(data.data[0]);
+        const characterHistory: TestCharacterHistory =
+          data.data[0].history_dict;
+
+        tempAdventureItemHistory.characters[character.characterName] =
+          characterHistory;
+
+        Object.entries(characterHistory.highest).map(([key, highestInfo]) => {
+          const itemKey = Number(key);
+          if (
+            !(itemKey in tempAdventureItemHistory.highest) ||
+            highestInfo.rarity >
+              tempAdventureItemHistory.highest[itemKey].rarity
+          ) {
+            tempAdventureItemHistory.highest[itemKey] = highestInfo;
+          }
+        });
+      }
+    }
+    setAdventureItemHistory(tempAdventureItemHistory);
+  }
+
   return (
     <BaseLayout>
       <VStack>
@@ -178,8 +227,8 @@ export default function AdventurePage() {
               </Center>
             )}
             {characterList.length > 0 && (
-              <Center mt={5}>
-                <AdventureAccordion adventureName={adventureName} />
+              <Center mt={5} mb={5}>
+                <AdventureAccordion characterList={characterList} />
               </Center>
             )}
           </Box>

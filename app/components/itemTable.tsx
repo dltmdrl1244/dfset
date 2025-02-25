@@ -21,6 +21,7 @@ import { itemSets } from "../context/setIds";
 interface ItemTableProps {
   itemHistory?: ItemHistory;
   isAdventure: boolean;
+  testItemHistory: TestAdventureCharacterHistory;
 }
 
 const hexToRGB = (hex: string, opacity: number): string => {
@@ -33,6 +34,7 @@ const hexToRGB = (hex: string, opacity: number): string => {
 export const ItemTable: React.FC<ItemTableProps> = ({
   itemHistory,
   isAdventure,
+  testItemHistory,
 }) => {
   return (
     <Box maxWidth="730px" boxShadow="base">
@@ -108,12 +110,8 @@ export const ItemTable: React.FC<ItemTableProps> = ({
                         <ItemIcon
                           setIdx={setIdx}
                           slotIdx={slotIdx}
-                          historyItem={
-                            itemHistory &&
-                            itemHistory[itemKey] &&
-                            itemHistory[itemKey]
-                          }
                           isAdventure={isAdventure}
+                          testItemHistory={testItemHistory}
                         />
                       </Center>
                     </Td>

@@ -16,7 +16,7 @@ import { ItemRarityBadge } from "./badges";
 import { useColorMode } from "@chakra-ui/react";
 
 interface PotListProps {
-  potList: EquipmentType[];
+  potList: SimpleEquipment[];
 }
 
 export const PotList: React.FC<PotListProps> = ({ potList }) => {

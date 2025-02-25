@@ -24,7 +24,7 @@ export async function GET(request: Request) {
   if (next) {
     params.set("next", next);
   } else {
-    params.set("code", "504,505,513,520");
+    params.set("code", "504,505,513,520,511");
     params.set("startDate", startDate);
     params.set("endDate", endDate);
     params.set("limit", limit);
