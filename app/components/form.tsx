@@ -13,6 +13,7 @@ import {
   MenuItem,
   Center,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { redirect } from "next/navigation";
 import { useColorMode } from "@chakra-ui/react";
@@ -23,6 +24,7 @@ interface FormProps {
   searchHistory: SearchHistory[];
   searchInfo: SearchHistory;
   setSearchInfo: React.Dispatch<React.SetStateAction<SearchHistory>>;
+  setIsSearched: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface CharacterResponse {
@@ -39,12 +41,17 @@ export default function Form({
   searchHistory,
   searchInfo,
   setSearchInfo,
+  setIsSearched,
 }: FormProps) {
   const [serverId, setServerId] = useState("all");
   const [characterName, setCharacterName] = useState("");
   const { colorMode, toggleColorMode } = useColorMode();
+  const toast = useToast();
 
   useEffect(() => {
+    if (searchInfo.characterName === "" && searchInfo.serverId === "") {
+      return;
+    }
     searchCharacters();
   }, [searchInfo]);
 
@@ -82,6 +89,19 @@ export default function Form({
       const response = await fetch(`/api/characterName?${params.toString()}`);
       const data = await response.json();
 
+      if (response.status === 503 && !response.ok) {
+        console.log("던파 서버 점검 중");
+        // setSearchResult([]);
+        toast({
+          title: "서버 점검중",
+          description: "모험단 검색만 가능합니다.",
+          status: "warning",
+          isClosable: true,
+        });
+        return;
+      }
+
+      setIsSearched(true);
       const characters: Character[] = data.data.rows.map(
         (item: CharacterResponse): Character => ({
           serverId: item.serverId,

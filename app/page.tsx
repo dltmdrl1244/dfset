@@ -17,6 +17,7 @@ import { InfoIcon } from "@chakra-ui/icons";
 
 export default function Home() {
   const [searchResult, setSearchResult] = useState<Character[]>([]);
+  const [isSearched, setIsSearched] = useState<boolean>(false);
   const [searchHistory, setSearchHistory] = useState<SearchHistory[]>([]);
   const [searchInfo, setSearchInfo] = useState<SearchHistory>({
     serverId: "",
@@ -33,21 +34,25 @@ export default function Home() {
           setSearchHistory={setSearchHistory}
           searchInfo={searchInfo}
           setSearchInfo={setSearchInfo}
+          setIsSearched={setIsSearched}
         />
-        <SearchHistory
-          searchHistory={searchHistory}
-          setSearchHistory={setSearchHistory}
-          setSearchInfo={setSearchInfo}
-        />
+        {!isSearched && (
+          <SearchHistory
+            searchHistory={searchHistory}
+            setSearchHistory={setSearchHistory}
+            setSearchInfo={setSearchInfo}
+          />
+        )}
+        {isSearched && <SearchResult searchResult={searchResult} />}
       </VStack>
-      <SearchResult searchResult={searchResult} />
-
       <HStack
         width="500px"
         border="1px solid dimgray"
         p={4}
         borderRadius="md"
-        gap={3}>
+        gap={3}
+        mt={10}
+        mb={10}>
         <InfoIcon />
         <VStack>
           <Text fontSize={"sm"}>

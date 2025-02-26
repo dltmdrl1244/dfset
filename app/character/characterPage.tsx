@@ -916,7 +916,17 @@ export default function CharacterPage() {
         isClosable: true,
       });
     } else {
-      updateCharacterHistory();
+      const response = await fetch("/api/servers");
+      if (response.status === 503) {
+        toast({
+          title: `서버 점검중`,
+          description: "캐릭터 갱신이 불가능합니다.",
+          status: "warning",
+          isClosable: true,
+        });
+      } else {
+        updateCharacterHistory();
+      }
     }
   }
 
