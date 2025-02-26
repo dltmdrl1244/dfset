@@ -51,10 +51,9 @@ export default function Home() {
         <InfoIcon />
         <VStack>
           <Text fontSize={"sm"}>
-            2025-02-26 01:00부로 DB 구조가 업데이트되었습니다. <br></br>
-            캐릭터별로 검색을 새로 해주셔야 모험단 전체 테이블에 정보가
-            반영됩니다. <br></br>
-            이용에 불편을 드려 죄송합니다.
+            2025-02-26 17:30부로 DB 수정 작업이 진행되었습니다. <br></br>
+            캐릭터 DB 구조가 변경되어 새로 검색을 부탁드립니다. <br></br>
+            이용에 불편을 드려 죄송합니다.<br></br>
           </Text>
         </VStack>
       </HStack>
