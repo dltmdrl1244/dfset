@@ -48,6 +48,7 @@ export default function AdventurePage() {
   }, [adventureName]);
 
   async function loadAdventureInfo(aName: string) {
+    setCharacterLoaded(false);
     const params = new URLSearchParams();
     params.set("adventureName", aName);
 
