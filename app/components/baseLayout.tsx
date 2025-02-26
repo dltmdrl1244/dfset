@@ -16,10 +16,10 @@ const BaseLayout: React.FC<BaseLayoutProps> = ({ children }) => {
       <ColorModeScript initialColorMode={theme.config.initialColorMode} />
       <TopBar />
       <main>
-        <Center minWidth="1000px">
-          <Box width="1000px" minWidth="1000px">
-            <VStack minHeight="90vh">{children}</VStack>
-          </Box>
+        <Center minWidth="1000px" width="1000px" margin={"0 auto"}>
+          <VStack minH="calc(100vh - 130px)">{children}</VStack>
+          {/* <Box width="1000px" minWidth="1000px">
+          </Box> */}
         </Center>
       </main>
       <Footer />
