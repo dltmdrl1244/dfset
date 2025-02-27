@@ -25,7 +25,6 @@ import BaseLayout from "../components/baseLayout";
 import { InfoIcon } from "@chakra-ui/icons";
 import { equipments } from "@/public/equipment";
 import { itemSets } from "../context/setIds";
-import { tempCharacterId } from "@/public/charactersId";
 
 interface TimelineApiResponse {
   code: number;
