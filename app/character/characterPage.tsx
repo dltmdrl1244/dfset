@@ -25,6 +25,7 @@ import BaseLayout from "../components/baseLayout";
 import { InfoIcon } from "@chakra-ui/icons";
 import { equipments } from "@/public/equipment";
 import { itemSets } from "../context/setIds";
+import { tempCharacterId } from "@/public/charactersId";
 
 interface TimelineApiResponse {
   code: number;
@@ -247,7 +248,7 @@ export default function CharacterPage() {
         setItemTimeline(data.data.timeline);
       } else {
         // db에 데이터 없음
-        const rv = await getCharacterTimelineFromAPI();
+        const rv = await getCharacterTimelineFromAPI(character);
         rv.sort((a, b) => {
           const dateA = dayjs(a.date);
           const dateB = dayjs(b.date);
@@ -264,64 +265,65 @@ export default function CharacterPage() {
     }
   }
 
-  async function updateCharacterTimeline() {
-    if (!character) {
-      return;
-    }
+  // async function updateCharacterTimeline() {
+  //   if (!character) {
+  //     return;
+  //   }
 
-    const params = new URLSearchParams();
-    params.set("characterId", character?.characterId);
+  //   const params = new URLSearchParams();
+  //   params.set("characterId", character?.characterId);
 
-    try {
-      const response = await fetch(`api/query/timeline?${params.toString()}`);
-      const data = await response.json();
+  //   try {
+  //     const response = await fetch(`api/query/timeline?${params.toString()}`);
+  //     const data = await response.json();
 
-      if (
-        data.data &&
-        Array.isArray(data.data.timeline) &&
-        data.data.timeline.length > 0
-      ) {
-        setLatestUpdate(data.data.create_time);
-        let tempTimelines: TimelineInfo[] = data.data.timeline;
+  //     if (
+  //       data.data &&
+  //       Array.isArray(data.data.timeline) &&
+  //       data.data.timeline.length > 0
+  //     ) {
+  //       setLatestUpdate(data.data.create_time);
+  //       let tempTimelines: TimelineInfo[] = data.data.timeline;
 
-        // db에 데이터 있음
-        const rv: TimelineInfo[] = await getCharacterTimelineFromAPI(
-          data.data.create_time
-        );
+  //       // db에 데이터 있음
+  //       const rv: TimelineInfo[] = await getCharacterTimelineFromAPI(
+  //         character,
+  //         data.data.create_time
+  //       );
 
-        tempTimelines = [...tempTimelines, ...rv];
+  //       tempTimelines = [...tempTimelines, ...rv];
 
-        tempTimelines.sort((a, b) => {
-          const dateA = dayjs(a.date);
-          const dateB = dayjs(b.date);
-          return dateA.isBefore(dateB, "minute") ? -1 : 1;
-        });
+  //       tempTimelines.sort((a, b) => {
+  //         const dateA = dayjs(a.date);
+  //         const dateB = dayjs(b.date);
+  //         return dateA.isBefore(dateB, "minute") ? -1 : 1;
+  //       });
 
-        saveCharacterTimeline(tempTimelines);
+  //       saveCharacterTimeline(tempTimelines);
 
-        if (rv.length > 0) {
-          setItemTimeline(tempTimelines);
-        }
-      } else {
-        // db에 데이터 없음
-        const rv = await getCharacterTimelineFromAPI();
-        if (rv.length > 0) {
-          saveCharacterTimeline(rv);
-        }
+  //       if (rv.length > 0) {
+  //         setItemTimeline(tempTimelines);
+  //       }
+  //     } else {
+  //       // db에 데이터 없음
+  //       const rv = await getCharacterTimelineFromAPI(character);
+  //       if (rv.length > 0) {
+  //         saveCharacterTimeline(rv);
+  //       }
 
-        rv.sort((a, b) => {
-          const dateA = dayjs(a.date);
-          const dateB = dayjs(b.date);
-          return dateA.isBefore(dateB, "minute") ? -1 : 1;
-        });
+  //       rv.sort((a, b) => {
+  //         const dateA = dayjs(a.date);
+  //         const dateB = dayjs(b.date);
+  //         return dateA.isBefore(dateB, "minute") ? -1 : 1;
+  //       });
 
-        setItemTimeline(rv);
-      }
-    } catch (error) {
-      console.error(error);
-      return;
-    }
-  }
+  //       setItemTimeline(rv);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     return;
+  //   }
+  // }
 
   async function saveCharacterTimeline(timelineInfos: TimelineInfo[]) {
     if (timelineInfos.length <= 0) {
@@ -393,6 +395,45 @@ export default function CharacterPage() {
     }
   }
 
+  async function TestTempUpdateCharacterHistory(chId: string) {
+    const params = new URLSearchParams();
+    params.set("characterId", chId);
+    try {
+      const response = await fetch(`api/query/character?characterId=${chId}`);
+      const data = await response.json();
+      // 캐릭터 검색
+      if (data.data) {
+        // 있으면 바로 꺼내서 setCharacter
+        const newCharacter: Character = {
+          serverId: data.data.server_id,
+          characterId: data.data.character_id,
+          characterName: data.data.character_name,
+          jobName: data.data.job_name,
+          adventureName: data.data.adventure_name,
+        };
+
+        ///////////////////////////////////////////////////////////////
+        const rv: TestHistoryItem[] = await getCharacterTimelineFromAPI(
+          newCharacter
+        );
+
+        rv.sort((a, b) => {
+          const dateA = dayjs(a.date);
+          const dateB = dayjs(b.date);
+          return dateA.isBefore(dateB, "minute") ? -1 : 1;
+        });
+
+        const testCharacterHistory: TestCharacterHistory | undefined =
+          testMakeCharacterHistory(rv);
+        if (testCharacterHistory) {
+          testSaveCharacterHistory(newCharacter, testCharacterHistory);
+        }
+      }
+    } catch (error) {
+      console.error("Error searching characters:", error);
+    }
+  }
+
   async function testGetCharacterHistory() {
     if (!character) {
       return;
@@ -415,7 +456,9 @@ export default function CharacterPage() {
         setCharacterHistory(data.data[0].history_dict);
       } else {
         // 없다
-        const rv: TestHistoryItem[] = await getCharacterTimelineFromAPI();
+        const rv: TestHistoryItem[] = await getCharacterTimelineFromAPI(
+          character
+        );
 
         rv.sort((a, b) => {
           const dateA = dayjs(a.date);
@@ -427,7 +470,7 @@ export default function CharacterPage() {
           testMakeCharacterHistory(rv);
         if (testCharacterHistory) {
           setCharacterHistory(testCharacterHistory);
-          testSaveCharacterHistory(testCharacterHistory);
+          testSaveCharacterHistory(character, testCharacterHistory);
           setLatestUpdate(dayjs().toISOString());
         }
       }
@@ -437,20 +480,21 @@ export default function CharacterPage() {
     }
   }
 
-  async function updateCharacterHistory() {
-    if (!character) {
+  async function updateCharacterHistory(targetCharacter: Character) {
+    if (!targetCharacter) {
       return;
     }
 
     try {
       const response = await fetch(
-        `api/query/history?characterId=${character.characterId}`
+        `api/query/history?characterId=${targetCharacter.characterId}`
       );
       const data = await response.json();
 
       if (data.data) {
         const createTime: string = data.data.create_time;
         const rv: TestHistoryItem[] = await getCharacterTimelineFromAPI(
+          targetCharacter,
           createTime
         );
 
@@ -517,10 +561,11 @@ export default function CharacterPage() {
     }
 
     setCharacterHistory(tempCharacterHistory);
-    testSaveCharacterHistory(tempCharacterHistory);
+    testSaveCharacterHistory(character, tempCharacterHistory);
   }
 
   async function testSaveCharacterHistory(
+    targetCharacter: Character,
     characterHistory: TestCharacterHistory
   ) {
     if (!characterHistory || !character) {
@@ -534,7 +579,7 @@ export default function CharacterPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          characterId: character?.characterId,
+          characterId: targetCharacter?.characterId,
           histories: characterHistory,
         }),
       });
@@ -652,7 +697,10 @@ export default function CharacterPage() {
   /*
   Neople API를 호출해서 타임라인 정보를 가져옴.
   */
-  const getCharacterTimelineFromAPI = async (startDate?: string) => {
+  const getCharacterTimelineFromAPI = async (
+    targetCharacter: Character,
+    startDate?: string
+  ) => {
     const tempTimelines: TestHistoryItem[] = [];
 
     if (!character) {
@@ -668,8 +716,8 @@ export default function CharacterPage() {
       }
 
       const params = new URLSearchParams();
-      params.set("sId", character?.serverId);
-      params.set("cId", character.characterId);
+      params.set("sId", targetCharacter?.serverId);
+      params.set("cId", targetCharacter.characterId);
       params.set("startDate", startDate);
       params.set("endDate", endDate);
       params.set("limit", "100");
@@ -923,7 +971,7 @@ export default function CharacterPage() {
           isClosable: true,
         });
       } else {
-        updateCharacterHistory();
+        updateCharacterHistory(character);
       }
     }
   }
