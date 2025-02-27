@@ -952,6 +952,9 @@ export default function CharacterPage() {
   }
 
   async function handleUpdateButtonClicked() {
+    if (!character) {
+      return;
+    }
     const currentTime = dayjs();
     const latestUpdateTime = dayjs(latestUpdate);
     if (currentTime.diff(latestUpdateTime, "minute") < 20) {
