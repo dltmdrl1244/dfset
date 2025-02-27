@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
       );
     } else {
       await sql(
-        "UPDATE character_history SET history_dict = ($1) WHERE character_id = ($2)",
+        "UPDATE character_history SET history_dict = ($1), create_time = CURRENT_TIMESTAMP WHERE character_id = ($2)",
         [JSON.stringify(histories), characterId]
       );
       return NextResponse.json(

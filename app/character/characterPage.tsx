@@ -459,8 +459,6 @@ export default function CharacterPage() {
           const dateB = dayjs(b.date);
           return dateA.isBefore(dateB, "minute") ? -1 : 1;
         });
-        console.log("새롭게 가져온 정보들 : ", rv);
-        console.log(characterHistory);
         addCharacterHistory(rv);
         setLatestUpdate(dayjs().toISOString());
       }
