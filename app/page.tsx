@@ -43,8 +43,8 @@ export default function Home() {
             setSearchInfo={setSearchInfo}
           />
         )}
-        {isSearched && <SearchResult searchResult={searchResult} />}
       </VStack>
+      {isSearched && <SearchResult searchResult={searchResult} />}
       {/* <HStack
         width="500px"
         border="1px solid dimgray"
