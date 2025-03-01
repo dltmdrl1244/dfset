@@ -450,7 +450,7 @@ export default function CharacterPage() {
       }
 
       if (data.data) {
-        console.log(data.data);
+        // console.log(data.data);
         setLatestUpdate(data.data[0].create_time);
         // 캐릭터 히스토리 있다
         setCharacterHistory(data.data[0].history_dict);

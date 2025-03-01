@@ -55,9 +55,9 @@ export default function Home() {
         mb={10}>
         <InfoIcon />
         <Text fontSize="sm">
-          현재 캐릭터 갱신 시 데이터가 중복되는 이슈가 있습니다. <br></br>현재
-          수정중이며 빠른 시일 내에 수정하도록 하겠습니다. <br></br>이용에
-          불편을 드려 죄송합니다.
+          캐릭터 갱신 시 데이터가 중복되는 이슈를 수정했습니다. <br></br>
+          캐릭터별로 재갱신을 부탁드립니다. <br></br>
+          이용에 불편을 드려 죄송합니다.
         </Text>
       </HStack>
     </BaseLayout>
