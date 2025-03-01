@@ -513,7 +513,7 @@ export default function CharacterPage() {
     }
   }
   function addCharacterHistory(historyItems: TestHistoryItem[]) {
-    if (historyItems.length <= 0 || !character || !characterHistory) {
+    if (!character || !characterHistory) {
       return;
     }
 
