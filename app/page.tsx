@@ -45,8 +45,8 @@ export default function Home() {
         )}
       </VStack>
       {isSearched && <SearchResult searchResult={searchResult} />}
-      {/* <HStack
-        width="500px"
+      <HStack
+        // width="500px"
         border="1px solid dimgray"
         p={4}
         borderRadius="md"
@@ -54,7 +54,12 @@ export default function Home() {
         mt={10}
         mb={10}>
         <InfoIcon />
-      </HStack> */}
+        <Text fontSize="sm">
+          현재 캐릭터 갱신 시 데이터가 중복되는 이슈가 있습니다. <br></br>현재
+          수정중이며 빠른 시일 내에 수정하도록 하겠습니다. <br></br>이용에
+          불편을 드려 죄송합니다.
+        </Text>
+      </HStack>
     </BaseLayout>
   );
 }
