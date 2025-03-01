@@ -12,10 +12,9 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const rv = await sql(
-      "SELECT * FROM character_history WHERE character_id = ($1)",
-      [characterId]
-    );
+    const rv = await sql("SELECT * FROM history WHERE character_id = ($1)", [
+      characterId,
+    ]);
 
     if (rv.length > 0) {
       return NextResponse.json({ data: rv[0], message: "OK" }, { status: 200 });
@@ -54,13 +53,12 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const data = await sql(
-      "SELECT * FROM character_history WHERE character_id = ($1)",
-      [characterId]
-    );
+    const data = await sql("SELECT * FROM history WHERE character_id = ($1)", [
+      characterId,
+    ]);
     if (data.length <= 0) {
       await sql(
-        "INSERT INTO character_history (character_id, history_dict) VALUES ($1, $2)",
+        "INSERT INTO history (character_id, history_dict) VALUES ($1, $2)",
         [characterId, JSON.stringify(histories)]
       );
       return NextResponse.json(
@@ -69,7 +67,7 @@ export async function POST(req: NextRequest) {
       );
     } else {
       await sql(
-        "UPDATE character_history SET history_dict = ($1), create_time = CURRENT_TIMESTAMP WHERE character_id = ($2)",
+        "UPDATE history SET history_dict = ($1), create_time = CURRENT_TIMESTAMP WHERE character_id = ($2)",
         [JSON.stringify(histories), characterId]
       );
       return NextResponse.json(

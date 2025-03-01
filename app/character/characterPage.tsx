@@ -492,7 +492,9 @@ export default function CharacterPage() {
       const data = await response.json();
 
       if (data.data) {
+        // console.log(data.data);
         const createTime: string = data.data.create_time;
+        // console.log("createTime : ", createTime);
         const rv: TestHistoryItem[] = await getCharacterTimelineFromAPI(
           targetCharacter,
           createTime
@@ -707,6 +709,10 @@ export default function CharacterPage() {
       router.push("/");
       return tempTimelines;
     }
+
+    // if (startDate) {
+    //   console.log("startDate : ", startDate);
+    // }
     ///////////////////////////////////////////////////////////////////////////////////////////////
     async function fetchData(startDate: string, endDate: string, next: string) {
       if (!character) {
@@ -766,13 +772,16 @@ export default function CharacterPage() {
     let currentStartDate;
     let currentEndDate;
     if (startDate) {
-      currentStartDate = dayjs(startDate);
-      currentEndDate = dayjs(startDate);
+      currentStartDate = dayjs(startDate).add(9, "hours");
+      currentEndDate = dayjs(startDate).add(9, "hours");
     } else {
       // 중천 시작일
       currentStartDate = dayjs("2025-01-09 06:00:00");
       currentEndDate = dayjs("2025-01-09 06:00:00");
     }
+
+    // console.log(latestUpdate);
+    // console.log("탐색 시작 날짜 : ", currentStartDate.toISOString());
 
     // 현재까지
     const endDate = dayjs();
