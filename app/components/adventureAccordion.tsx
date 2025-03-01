@@ -29,101 +29,14 @@ export const AdventureAccordion: React.FC<AdventureAccordionProps> = ({
       highest: {},
       characters: {},
     });
-
-  // useEffect(() => {
-  //   testMakeAdventureItemHistory();
-  // }, []);
-  // const [characterNameToItemHistory, setCharacterNameToItemHistory] =
-  //   useState<CharacterNameToItemHistory>({});
-  // const [adventureItemHistory, setAdventureItemHistory] = useState<ItemHistory>(
-  //   {}
-  // );
-
-  // useEffect(() => {
-  //   if (Object.keys(characterNameToItemHistory).length <= 0) {
-  //     return;
-  //   }
-
-  //   makeAdventureItemTable();
-  // }, [characterNameToItemHistory]);
-
-  // function makeAdventureItemTable() {
-  //   if (Object.keys(characterNameToItemHistory).length <= 0) {
-  //     return;
-  //   }
-  //   const tempAdventureItemHistory: ItemHistory = {};
-  //   for (const [characterName, historyDict] of Object.entries(
-  //     characterNameToItemHistory
-  //   )) {
-  //     // historyDict는 ItemHistory 타입
-  //     for (const [key, value] of Object.entries(historyDict)) {
-  //       const itemKey: number = Number(key); // 아이템키
-  //       const historyItem: HistoryItem = value; // HistoryItem
-
-  //       if (itemKey in tempAdventureItemHistory) {
-  //         tempAdventureItemHistory[itemKey].histories.push({
-  //           characterName: characterName,
-  //           timelines: historyItem.histories[0].timelines,
-  //         });
-  //         if (
-  //           historyItem.highest.rarity >
-  //           tempAdventureItemHistory[itemKey].highest.rarity
-  //         ) {
-  //           tempAdventureItemHistory[itemKey].highest = historyItem.highest;
-  //         }
-  //       } else {
-  //         tempAdventureItemHistory[itemKey] = {
-  //           histories: [
-  //             {
-  //               characterName: characterName,
-  //               timelines: historyItem.histories[0].timelines,
-  //             },
-  //           ],
-  //           highest: historyItem.highest,
-  //         };
-  //       }
-  //     }
-  //   }
-  //   setAdventureItemHistory(tempAdventureItemHistory);
-  // }
-
-  // async function getAdventureItemTable() {
-  //   if (!adventureName) {
-  //     return;
-  //   }
-  //   const tempCharacterNameToItemHistory: CharacterNameToItemHistory = {};
-  //   const params = new URLSearchParams();
-  //   params.set("adventureName", adventureName);
-
-  //   try {
-  //     const response = await fetch(`api/query/adventure?${params.toString()}`);
-  //     const data = await response.json();
-
-  //     for (const character of data.data) {
-  //       const characterparam = new URLSearchParams();
-  //       characterparam.set("characterId", character.character_id);
-
-  //       const characterResponse = await fetch(
-  //         `api/query/history?${characterparam.toString()}`
-  //       );
-  //       const characterData = await characterResponse.json();
-
-  //       if (characterData.data && characterData.data.history_dict) {
-  //         tempCharacterNameToItemHistory[character.character_name] =
-  //           characterData.data.history_dict;
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-
-  //   setCharacterNameToItemHistory(tempCharacterNameToItemHistory);
-  // }
+  const [adventureInfoLoading, setAdventureInfoLoading] =
+    useState<boolean>(false);
 
   async function testMakeAdventureItemHistory() {
     if (characterList.length <= 0) {
       return;
     }
+    setAdventureInfoLoading(true);
     const tempAdventureItemHistory: TestAdventureCharacterHistory = {
       highest: {},
       characters: {},
@@ -155,6 +68,7 @@ export const AdventureAccordion: React.FC<AdventureAccordionProps> = ({
         });
       }
     }
+    setAdventureInfoLoading(false);
     setAdventureItemHistory(tempAdventureItemHistory);
   }
 
@@ -189,9 +103,16 @@ export const AdventureAccordion: React.FC<AdventureAccordionProps> = ({
               </ListItem>
             </UnorderedList>
             <Flex direction="column" gap={2} mt={2}>
-              <Button colorScheme="teal" onClick={testMakeAdventureItemHistory}>
-                조회
-              </Button>
+              {adventureInfoLoading ? (
+                <Button colorScheme="teal" isLoading></Button>
+              ) : (
+                <Button
+                  colorScheme="teal"
+                  onClick={testMakeAdventureItemHistory}>
+                  조회
+                </Button>
+              )}
+
               <ItemTable
                 isAdventure={true}
                 testItemHistory={adventureItemHistory}

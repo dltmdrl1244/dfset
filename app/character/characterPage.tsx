@@ -46,6 +46,7 @@ export default function CharacterPage() {
 
   const [character, setCharacter] = useState<Character | null>(null);
   const [infoLoaded, setInfoLoaded] = useState<boolean>(false);
+  const [infoUpdating, setInfoUpdating] = useState<boolean>(false);
   const [latestUpdate, setLatestUpdate] = useState<string>("");
 
   const [itemTimeline, setItemTimeline] = useState<TimelineInfo[]>([]);
@@ -55,9 +56,6 @@ export default function CharacterPage() {
   const [itemHistoryDict, setItemHistoryDict] = useState<ItemHistory>({});
   // 이거는 itemTable에 전달해야 돼서 중요함 !!!!!
 
-  const [weaponList, setWeaponList] = useState<Weapon[]>([]);
-  const [potList, setPotList] = useState<SetItem[]>([]);
-
   //////// 테스트 영역
   const [testTimelines, setTestTimelines] = useState<TimelineInfo[]>([]);
   const [characterHistory, setCharacterHistory] =
@@ -66,38 +64,7 @@ export default function CharacterPage() {
     useState<TestAdventureCharacterHistory | null>(null);
   //////// 테스트 영역
 
-  const rarityIndex = ["레전더리", "에픽", "태초"];
   const toast = useToast();
-  const setIdxDict: Record<string, number> = {
-    "7f788a703a87d783079b41d0fe6448c9": 0, // 황금향
-    b92ca7784123b5fea9cea40144925194: 1, // 용투장
-    "7c9c8335b72c2907df20786f8f5b27f0": 2, // 세렌디피티
-    "11f7d203a05ea6f13300c0facb39f11e": 3, // 칠흑
-    "2877466bc2fc8bedf7799d88167c9fe3": 4, // 한계
-    "8e9cb65cb6285d7e2f084f440aa18870": 5, // 마력
-    "4ee7bd5912cda6e2a24c1f36d5202b46": 6, // 페어리
-    "854dc8c01b1bc231e132dae5df3c52bc": 7, // 발키리
-    "93e7825053bdec4e0f4c12837cf4f57e": 8, // 에테
-    "3af7c961e7d8cd8b5b42c5f82af2a0ad": 9, // 그림자
-    "4e65968c4d30898e6879434dc641b6e4": 10, // 자연
-    e23286107ba4328af86c83aabc347e9e: 11, // 무리
-    distinctItems: 12,
-  };
-
-  const slotIdxDict: Record<string, number> = {
-    "3da92241d44bdafcf7554057e6479c83": 0,
-    "7c4b28699ae7994798289f187d519992": 1,
-    f2976a25a516451e3e8667bac328b308: 2,
-    "934ed2dea99f55f775df256fc29c5d56": 3,
-    ef6fcc3b39b2bbcbf09a71da6cbafe06: 4,
-    "390e3966118b0c466ce9f8eae45e1629": 5,
-    "80bddf423629c28c7b4459c328fdffaf": 6,
-    b04c7fb9b29b27b91a0a9e5a1822bc8f: 7,
-    "2fef5d81b7f59f0c75241890a8d941c9": 8,
-    fe5f3db78175f5a3196385c688d29681: 9,
-    "601834074c49bb0e48cb65a75a8667bc": 10,
-  };
-
   const router = useRouter();
 
   useEffect(() => {
@@ -511,6 +478,8 @@ export default function CharacterPage() {
     } catch (error) {
       console.error(error);
     }
+
+    setInfoUpdating(false);
   }
   function addCharacterHistory(historyItems: TestHistoryItem[]) {
     if (!character || !characterHistory) {
@@ -983,6 +952,7 @@ export default function CharacterPage() {
           isClosable: true,
         });
       } else {
+        setInfoUpdating(true);
         updateCharacterHistory(character);
       }
     }
@@ -1073,13 +1043,20 @@ export default function CharacterPage() {
                     </Box>
 
                     <Flex direction="column" mt={2}>
-                      <Button
-                        colorScheme="teal"
-                        onClick={() => {
-                          handleUpdateButtonClicked();
-                        }}>
-                        갱신
-                      </Button>
+                      {infoUpdating ? (
+                        <Button colorScheme="teal" isLoading>
+                          갱신
+                        </Button>
+                      ) : (
+                        <Button
+                          colorScheme="teal"
+                          onClick={() => {
+                            handleUpdateButtonClicked();
+                          }}>
+                          갱신
+                        </Button>
+                      )}
+
                       <Text fontSize="sm" mt={1}>
                         최근 업데이트:
                       </Text>
