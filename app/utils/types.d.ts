@@ -3,56 +3,6 @@ interface SearchHistory {
   characterName: string;
 }
 
-interface Equipment {
-  itemId: string;
-  itemName: string;
-  rarity: number;
-}
-
-interface SetItem extends Equipment {
-  setId?: string;
-  setIdx?: number;
-  slotId?: string;
-  slotIdx?: number;
-}
-
-interface Weapon extends Equipment {
-  itemTypeDetailId?: string;
-}
-
-type EquipmentType = SetItem | Weapon;
-
-interface TimelineInfo {
-  item: EquipmentType;
-  obtainCode: number; // 505 : 드랍, 504 : 항아리, 513 : 카드보상, 520 : 제작
-  date: string;
-  channelName?: string; // code가 513이면 없음
-  channelNo?: number; // code가 513이면 없음
-  dungeonName?: string; // code가 504이면 없음
-}
-
-interface HistoryItem {
-  histories: {
-    characterName: string;
-    timelines: TimelineInfo[];
-  }[];
-  highest: {
-    rarity: number;
-    itemId: string;
-  };
-}
-
-interface EquipmentResponse {
-  item_id: string;
-  item_name: string;
-  rarity: string;
-  set_id: string | null;
-  slot_id: string | null;
-  item_type_detail_id: string | null;
-  is_fusion: boolean;
-  is_distinct: boolean;
-}
-
 interface CharacterResponse {
   server_id: string;
   server_name: string;
@@ -71,38 +21,17 @@ interface Character {
   jobName: string;
 }
 
-interface SimpleCharacterResponse {
-  server_id: string;
-  character_id: string;
-  character_name: string;
-  adventure_name: string;
+type CharacterNameToCharacterHistory = Record<string, CharacterHistory>;
+
+interface AdventureCharacterHistory {
+  highest: Record<number, HighestItem>;
+  characters: CharacterNameToCharacterHistory;
 }
 
-interface SimpleCharacter {
-  serverId: string;
-  characterId: string;
-  characterName: string;
-  adventureName: string;
-}
-
-type HighestRarityItemId = Record<number, string>;
-type HighestRarityBit = Record<number, number>;
-type ItemHistory = Record<number, HistoryItem>;
-type CharacterNameToItemHistory = Record<string, ItemHistory>;
-type HighestRarity = Record<number, { rarity: number; itemId: string }>;
-
-///////////////////////////////////////////////////////////////////////////////////
-type TestCharacterNameToCharacterHistory = Record<string, TestCharacterHistory>;
-
-interface TestAdventureCharacterHistory {
-  highest: Record<number, TestHighestItem>;
-  characters: TestCharacterNameToCharacterHistory;
-}
-
-interface TestCharacterHistory {
-  characterInfo: TestCharacterInfo;
-  highest: Record<number, TestHighestItem>;
-  histories: Record<number, TestHistoryItem[]>;
+interface CharacterHistory {
+  characterInfo: CharacterInfo;
+  highest: Record<number, HighestItem>;
+  histories: Record<number, HistoryItem[]>;
   itemCount: itemCountArray;
   weaponList: SimpleEquipment[];
   potList: SimpleEquipment[];
@@ -116,17 +45,17 @@ interface SimpleEquipment {
 
 type itemCountArray = [number, number, number];
 
-interface TestCharacterInfo {
+interface CharacterInfo {
   characterId: string;
   characterName: string;
 }
 
-interface TestHighestItem {
+interface HighestItem {
   rarity: number;
   itemId: string;
 }
 
-interface TestEquipment {
+interface Equipment {
   itemId: string;
   itemName: string;
   rarity: number;
@@ -136,7 +65,7 @@ interface TestEquipment {
   isFusion: boolean;
 }
 
-interface TestEquipmentResponse {
+interface EquipmentResponse {
   item_id: string;
   item_name: string;
   rarity: number;
@@ -146,8 +75,8 @@ interface TestEquipmentResponse {
   is_fusion: boolean;
 }
 
-interface TestHistoryItem {
-  item: TestEquipment;
+interface HistoryItem {
+  item: Equipment;
   obtainCode: number;
   dungeonName: string;
   channelName: string;
@@ -155,14 +84,14 @@ interface TestHistoryItem {
   date: string;
 }
 
-interface TestTimelineResponse {
+interface TimelineResponse {
   code: number;
   name: string;
   date: string;
-  data: TestTimelineResponseItem;
+  data: TimelineResponseItem;
 }
 
-interface TestTimelineResponseItem {
+interface TimelineResponseItem {
   itemId: string;
   itemName: string;
   itemRarity: string;
@@ -172,8 +101,8 @@ interface TestTimelineResponseItem {
   mistGear: boolean;
 }
 
-interface TestTimelineInfo {
-  item: TestEquipment;
+interface TimelineInfo {
+  item: Equipment;
   obtainCode: number; // 505 : 드랍, 504 : 항아리, 513 : 카드보상, 520 : 제작
   date: string;
   channelName?: string; // code가 513이면 없음

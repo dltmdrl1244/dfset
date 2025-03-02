@@ -45,24 +45,14 @@ export default function CharacterPage() {
   const searchParams = useSearchParams();
 
   const [character, setCharacter] = useState<Character | null>(null);
-  const [infoLoaded, setInfoLoaded] = useState<boolean>(false);
   const [infoUpdating, setInfoUpdating] = useState<boolean>(false);
+  const [infoLoaded, setInfoLoaded] = useState<boolean>(false);
   const [latestUpdate, setLatestUpdate] = useState<string>("");
 
-  const [itemTimeline, setItemTimeline] = useState<TimelineInfo[]>([]);
-  const [itemCountArray, setItemCountArray] = useState([0, 0, 0]);
-
-  // 이거는 itemTable에 전달해야 돼서 중요함 !!!!!
-  const [itemHistoryDict, setItemHistoryDict] = useState<ItemHistory>({});
-  // 이거는 itemTable에 전달해야 돼서 중요함 !!!!!
-
-  //////// 테스트 영역
-  const [testTimelines, setTestTimelines] = useState<TimelineInfo[]>([]);
   const [characterHistory, setCharacterHistory] =
-    useState<TestCharacterHistory | null>(null);
-  const [testItemHistoryDict, setTestItemHistoryDict] =
-    useState<TestAdventureCharacterHistory | null>(null);
-  //////// 테스트 영역
+    useState<CharacterHistory | null>(null);
+  const [itemHistoryDict, setItemHistoryDict] =
+    useState<AdventureCharacterHistory | null>(null);
 
   const toast = useToast();
   const router = useRouter();
@@ -75,21 +65,18 @@ export default function CharacterPage() {
       return;
     }
 
-    // serverId = sId;
-    // characterId = cId;
-
     getCharacterBasicInfo();
   }, [searchParams]);
 
   useEffect(() => {
     if (character) {
-      testGetCharacterHistory();
+      getCharacterHistory();
     }
   }, [character]);
 
   useEffect(() => {
     if (character && characterHistory) {
-      testMakeItemHistory();
+      makeAdventureItemHistory();
     }
   }, [characterHistory]);
 
@@ -152,262 +139,14 @@ export default function CharacterPage() {
     }
   };
 
-  // 모험단
-  // Update: 모험단 테이블을 따로 안 둬도 될것 같아서 일단 지워봄
-  // const getAdventureInfo = async () => {
-  //   if (!character) {
-  //     return;
-  //   }
-
-  //   const adventureParams = new URLSearchParams();
-  //   adventureParams.set("characterId", character.characterId);
-
-  //   try {
-  //     const adventureResponse = await fetch(
-  //       `api/query/adventure?${adventureParams.toString()}`
-  //     );
-  //     const adventureData = await adventureResponse.json();
-
-  //     if (!adventureData.data) {
-  //       // 없으면
-  //       const postResponse = await fetch(`api/query/adventure`, {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({
-  //           characterId: character.characterId,
-  //           serverId: character.serverId,
-  //           adventureName: character?.adventureName,
-  //           characterName: character.characterName,
-  //         }),
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  /*
-  characterId를 통해 먼저 DB에서 최근 타임라인을 탐색
-  만약 DB에 타임라인 정보가 없다면 API 호출 및 DB에 새롭게 저장
-  */
-  // Update: DB에 타임라인 정보는 없어도 될 것 같음.
-  async function getCharacterTimeline() {
-    if (!character) {
-      return;
-    }
-    const params = new URLSearchParams();
-    params.set("characterId", character.characterId);
-
-    try {
-      const response = await fetch(`api/query/timeline?${params.toString()}`);
-      const data = await response.json();
-
-      if (
-        data.data &&
-        Array.isArray(data.data.timeline) &&
-        data.data.timeline.length > 0
-      ) {
-        // db에 데이터 있음
-        setLatestUpdate(data.data.create_time);
-        setItemTimeline(data.data.timeline);
-      } else {
-        // db에 데이터 없음
-        const rv = await getCharacterTimelineFromAPI(character);
-        rv.sort((a, b) => {
-          const dateA = dayjs(a.date);
-          const dateB = dayjs(b.date);
-          return dateA.isBefore(dateB, "minute") ? -1 : 1;
-        });
-        if (rv.length > 0) {
-          saveCharacterTimeline(rv);
-        }
-        setItemTimeline(rv);
-      }
-    } catch (error) {
-      console.error(error);
-      return;
-    }
-  }
-
-  // async function updateCharacterTimeline() {
-  //   if (!character) {
-  //     return;
-  //   }
-
-  //   const params = new URLSearchParams();
-  //   params.set("characterId", character?.characterId);
-
-  //   try {
-  //     const response = await fetch(`api/query/timeline?${params.toString()}`);
-  //     const data = await response.json();
-
-  //     if (
-  //       data.data &&
-  //       Array.isArray(data.data.timeline) &&
-  //       data.data.timeline.length > 0
-  //     ) {
-  //       setLatestUpdate(data.data.create_time);
-  //       let tempTimelines: TimelineInfo[] = data.data.timeline;
-
-  //       // db에 데이터 있음
-  //       const rv: TimelineInfo[] = await getCharacterTimelineFromAPI(
-  //         character,
-  //         data.data.create_time
-  //       );
-
-  //       tempTimelines = [...tempTimelines, ...rv];
-
-  //       tempTimelines.sort((a, b) => {
-  //         const dateA = dayjs(a.date);
-  //         const dateB = dayjs(b.date);
-  //         return dateA.isBefore(dateB, "minute") ? -1 : 1;
-  //       });
-
-  //       saveCharacterTimeline(tempTimelines);
-
-  //       if (rv.length > 0) {
-  //         setItemTimeline(tempTimelines);
-  //       }
-  //     } else {
-  //       // db에 데이터 없음
-  //       const rv = await getCharacterTimelineFromAPI(character);
-  //       if (rv.length > 0) {
-  //         saveCharacterTimeline(rv);
-  //       }
-
-  //       rv.sort((a, b) => {
-  //         const dateA = dayjs(a.date);
-  //         const dateB = dayjs(b.date);
-  //         return dateA.isBefore(dateB, "minute") ? -1 : 1;
-  //       });
-
-  //       setItemTimeline(rv);
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     return;
-  //   }
-  // }
-
-  async function saveCharacterTimeline(timelineInfos: TimelineInfo[]) {
-    if (timelineInfos.length <= 0) {
-      return;
-    }
-    // DB에 저장
-    try {
-      await fetch("api/query/timeline", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          characterId: character?.characterId,
-          timelines: timelineInfos,
-        }),
-      });
-      // console.log("DB가 업데이트되었습니다.");
-      toast({
-        title: "캐릭터 정보가 갱신되었습니다.",
-        status: "success",
-        isClosable: true,
-      });
-      getCharacterTimeline();
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   async function getCharacterHistory() {
-    if (!character) {
-      return;
-    }
-    const params = new URLSearchParams();
-    params.set("characterId", character.characterId);
-
-    try {
-      const response = await fetch(`api/query/history?${params.toString()}`);
-      const data = await response.json();
-
-      if (data.data && data.data.history_dict) {
-        // setItemHistoryDict(data.data.history_dict);
-        setCharacterHistory(data.data.history_dict);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  async function saveCharacterHistory(histories: ItemHistory) {
-    if (Object.keys(histories).length <= 0) {
-      // console.log("no data to save");
-      return;
-    }
-    // DB에 저장
-    try {
-      await fetch("api/query/history", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          characterId: character?.characterId,
-          histories: histories,
-        }),
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  async function TestTempUpdateCharacterHistory(chId: string) {
-    const params = new URLSearchParams();
-    params.set("characterId", chId);
-    try {
-      const response = await fetch(`api/query/character?characterId=${chId}`);
-      const data = await response.json();
-      // 캐릭터 검색
-      if (data.data) {
-        // 있으면 바로 꺼내서 setCharacter
-        const newCharacter: Character = {
-          serverId: data.data.server_id,
-          characterId: data.data.character_id,
-          characterName: data.data.character_name,
-          jobName: data.data.job_name,
-          adventureName: data.data.adventure_name,
-        };
-
-        ///////////////////////////////////////////////////////////////
-        const rv: TestHistoryItem[] = await getCharacterTimelineFromAPI(
-          newCharacter
-        );
-
-        rv.sort((a, b) => {
-          const dateA = dayjs(a.date);
-          const dateB = dayjs(b.date);
-          return dateA.isBefore(dateB, "minute") ? -1 : 1;
-        });
-
-        const testCharacterHistory: TestCharacterHistory | undefined =
-          testMakeCharacterHistory(rv);
-        if (testCharacterHistory) {
-          testSaveCharacterHistory(newCharacter, testCharacterHistory);
-        }
-      }
-    } catch (error) {
-      console.error("Error searching characters:", error);
-    }
-  }
-
-  async function testGetCharacterHistory() {
     if (!character) {
       return;
     }
 
     try {
       const response = await fetch(
-        `api/query/testHistory?characterId=${character.characterId}`
+        `api/query/history?characterId=${character.characterId}`
       );
       const data = await response.json();
 
@@ -417,15 +156,12 @@ export default function CharacterPage() {
       }
 
       if (data.data) {
-        // console.log(data.data);
-        setLatestUpdate(data.data[0].create_time);
+        setLatestUpdate(data.data.create_time);
         // 캐릭터 히스토리 있다
-        setCharacterHistory(data.data[0].history_dict);
+        setCharacterHistory(data.data.history_dict);
       } else {
         // 없다
-        const rv: TestHistoryItem[] = await getCharacterTimelineFromAPI(
-          character
-        );
+        const rv: HistoryItem[] = await getCharacterTimelineFromAPI(character);
 
         rv.sort((a, b) => {
           const dateA = dayjs(a.date);
@@ -433,7 +169,7 @@ export default function CharacterPage() {
           return dateA.isBefore(dateB, "minute") ? -1 : 1;
         });
 
-        const testCharacterHistory: TestCharacterHistory | undefined =
+        const testCharacterHistory: CharacterHistory | undefined =
           testMakeCharacterHistory(rv);
         if (testCharacterHistory) {
           setCharacterHistory(testCharacterHistory);
@@ -459,10 +195,8 @@ export default function CharacterPage() {
       const data = await response.json();
 
       if (data.data) {
-        // console.log(data.data);
         const createTime: string = data.data.create_time;
-        // console.log("createTime : ", createTime);
-        const rv: TestHistoryItem[] = await getCharacterTimelineFromAPI(
+        const rv: HistoryItem[] = await getCharacterTimelineFromAPI(
           targetCharacter,
           createTime
         );
@@ -481,7 +215,7 @@ export default function CharacterPage() {
 
     setInfoUpdating(false);
   }
-  function addCharacterHistory(historyItems: TestHistoryItem[]) {
+  function addCharacterHistory(historyItems: HistoryItem[]) {
     if (!character || !characterHistory) {
       return;
     }
@@ -537,14 +271,14 @@ export default function CharacterPage() {
 
   async function testSaveCharacterHistory(
     targetCharacter: Character,
-    characterHistory: TestCharacterHistory
+    characterHistory: CharacterHistory
   ) {
     if (!characterHistory || !character) {
       return;
     }
 
     try {
-      await fetch("api/query/testHistory", {
+      await fetch("api/query/history", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -564,13 +298,13 @@ export default function CharacterPage() {
     }
   }
 
-  function testGetEquipment(itemId: string): TestEquipment | null {
-    const foundItem: TestEquipmentResponse | undefined = equipments.find(
+  function testGetEquipment(itemId: string): Equipment | null {
+    const foundItem: EquipmentResponse | undefined = equipments.find(
       (item) => item.item_id === itemId
     );
 
     if (foundItem !== undefined) {
-      const newItem: TestEquipment = {
+      const newItem: Equipment = {
         itemId: foundItem.item_id,
         itemName: foundItem.item_name,
         rarity: foundItem.rarity,
@@ -584,17 +318,13 @@ export default function CharacterPage() {
     return null;
   }
 
-  function testMakeCharacterHistory(timelineInfos: TestHistoryItem[]) {
-    if (timelineInfos.length <= 0) {
-      return;
-    }
-
+  function testMakeCharacterHistory(timelineInfos: HistoryItem[]) {
     if (!character) {
       return;
     }
 
     // 0. 생성 및 characterInfo 설정
-    let tempCharacterHistory: TestCharacterHistory = {
+    let tempCharacterHistory: CharacterHistory = {
       characterInfo: {
         characterId: character.characterId,
         characterName: character.characterName,
@@ -610,8 +340,6 @@ export default function CharacterPage() {
       // 아이템키
       const itemKey: number =
         tl.item.setIdx * itemSets.length + tl.item.slotIdx;
-      // 레어리티
-      // tl.item.rarity
 
       // 1. highest 갱신
       if (
@@ -625,14 +353,6 @@ export default function CharacterPage() {
       }
 
       // 2. historyItem 만들어서 histories에 추가
-      // let historyItem: TestHistoryItem = {
-      //   item: tl.item,
-      //   obtainCode: tl.obtainCode,
-      //   dungeonName: item.dungeonName,
-      //   channelName: item.channelName,
-      //   channelNo: item.channelNo,
-      //   date: tl.date,
-      // };
       if (itemKey in tempCharacterHistory.histories) {
         tempCharacterHistory.histories[itemKey].push(tl);
       } else {
@@ -672,16 +392,12 @@ export default function CharacterPage() {
     targetCharacter: Character,
     startDate?: string
   ) => {
-    const tempTimelines: TestHistoryItem[] = [];
+    const tempTimelines: HistoryItem[] = [];
 
     if (!character) {
       router.push("/");
       return tempTimelines;
     }
-
-    // if (startDate) {
-    //   console.log("startDate : ", startDate);
-    // }
     ///////////////////////////////////////////////////////////////////////////////////////////////
     async function fetchData(startDate: string, endDate: string, next: string) {
       if (!character) {
@@ -708,14 +424,14 @@ export default function CharacterPage() {
         if (response.status === 200) {
           if (data.data.timeline.rows.length > 0) {
             for (const timeline of data.data.timeline.rows) {
-              const res: TestTimelineResponse = timeline;
-              const foundItem: TestEquipment | null = testGetEquipment(
+              const res: TimelineResponse = timeline;
+              const foundItem: Equipment | null = testGetEquipment(
                 res.data.itemId
               );
               if (!foundItem) {
                 continue;
               }
-              const timelineInfo: TestHistoryItem = {
+              const timelineInfo: HistoryItem = {
                 item: foundItem,
                 obtainCode: res.code,
                 date: res.date,
@@ -749,13 +465,11 @@ export default function CharacterPage() {
       currentEndDate = dayjs("2025-01-09 06:00:00");
     }
 
-    // console.log(latestUpdate);
-    // console.log("탐색 시작 날짜 : ", currentStartDate.toISOString());
-
     // 현재까지
     const endDate = dayjs();
     // 직접 지정
     // let endDate = dayjs("2025-02-01 06:00:00");
+
     while (endDate.isAfter(currentStartDate, "second")) {
       const diff = endDate.diff(currentStartDate, "d");
       const period = Math.min(88, diff);
@@ -776,143 +490,17 @@ export default function CharacterPage() {
     return tempTimelines;
   };
 
-  function testMakeItemHistory() {
+  function makeAdventureItemHistory() {
     if (!character || !characterHistory) {
       return;
     }
-    const temp: TestAdventureCharacterHistory = {
+    const temp: AdventureCharacterHistory = {
       highest: characterHistory.highest,
       characters: {
         [character.adventureName]: characterHistory,
       },
     };
-    setTestItemHistoryDict(temp);
-    setInfoLoaded(true);
-  }
-
-  async function updateItemDetails() {
-    const tempItemHistoryDict: ItemHistory = {};
-    const tempItemCountArray = [0, 0, 0];
-    const tempWeaponList: Weapon[] = [];
-    const tempPotList: SetItem[] = [];
-    // let tempHighestRarityDict: HighestRarity = {};
-    ////////////////////////////////////////////////////////////////////
-    function updateItemHistoryDict(
-      itemKey: number,
-      timelineItem: TimelineInfo,
-      newRarity: number,
-      newItemId: string
-    ) {
-      if (!character) {
-        return;
-      }
-      if (itemKey in tempItemHistoryDict) {
-        // histories.timelines에 추가
-        // tempItemHistoryDict[itemKey].histories[0].timelines.push(timelineItem);
-        tempItemHistoryDict[itemKey] = {
-          ...tempItemHistoryDict[itemKey],
-          histories: [
-            {
-              ...tempItemHistoryDict[itemKey].histories[0],
-              timelines: [
-                ...tempItemHistoryDict[itemKey].histories[0].timelines,
-                timelineItem,
-              ],
-            },
-          ],
-        };
-        // highest 수정
-        if (newRarity > tempItemHistoryDict[itemKey].highest.rarity) {
-          // tempItemHistoryDict[itemKey].highest = {
-          //   rarity: newRarity,
-          //   itemId: newItemId,
-          // };
-          tempItemHistoryDict[itemKey] = {
-            ...tempItemHistoryDict[itemKey],
-            highest: { rarity: newRarity, itemId: newItemId },
-          };
-        }
-      } else {
-        // 새로 만듦
-        tempItemHistoryDict[itemKey] = {
-          histories: [
-            {
-              characterName: character.characterName,
-              timelines: [timelineItem],
-            },
-          ],
-          highest: {
-            rarity: newRarity,
-            itemId: newItemId,
-          },
-        };
-      }
-    }
-
-    function updateItemCount(rarity: number) {
-      tempItemCountArray[rarity]++;
-    }
-
-    function updateWeaponList(newWeapon: Weapon) {
-      tempWeaponList.push(newWeapon);
-    }
-
-    function updatePotList(newItem: SetItem) {
-      tempPotList.push(newItem);
-    }
-
-    ////////////////////////////////////////////////////////////////////
-
-    if (!character) {
-      return;
-    }
-
-    if (!itemTimeline || itemTimeline.length <= 0) {
-      return;
-    }
-
-    for (const timeline of itemTimeline) {
-      if ("setId" in timeline.item) {
-        const item: SetItem = timeline.item;
-        if (item.setIdx == undefined || item.slotIdx == undefined) {
-          // 에픽 융합석이나 흑아 장비
-          // console.log(`error. ${item.setId}, ${item.slotId}`);
-          // console.log(timeline);
-          continue;
-        }
-
-        const itemKey: number = item.setIdx * 13 + item.slotIdx;
-        // const rarity: number = rarityIndex.indexOf(item.rarity);
-
-        updateItemHistoryDict(itemKey, timeline, item.rarity, item.itemId);
-        updateItemCount(item.rarity);
-        // updateHighestRarity(itemKey, rarity, item.itemId);
-
-        if (timeline.obtainCode == 504) {
-          updatePotList(item);
-        }
-      } else {
-        const item: Weapon = timeline.item;
-        // const rarity: number = rarityIndex.indexOf(item.rarity);
-
-        updateItemCount(item.rarity);
-        updateWeaponList(item);
-
-        if (timeline.obtainCode == 504) {
-          // 항아리
-          updatePotList(item);
-        }
-      }
-    } // end of for loop
-
-    // 데이터 반영
-    setItemHistoryDict({ ...tempItemHistoryDict });
-    setItemCountArray([...tempItemCountArray]);
-    // setWeaponList([...tempWeaponList]);
-    // setPotList([...tempPotList]);
-    // setHighestRarityItemDict({ ...tempHighestRarityDict });
-    saveCharacterHistory(tempItemHistoryDict);
-
+    setItemHistoryDict(temp);
     setInfoLoaded(true);
   }
 
@@ -969,7 +557,7 @@ export default function CharacterPage() {
           {/* <Center> */}
           <HStack gap={10}>
             <Box>
-              <HStack
+              {/* <HStack
                 width="240px"
                 border="1px solid dimgray"
                 p={4}
@@ -990,7 +578,7 @@ export default function CharacterPage() {
                     </Text>
                   </ListItem>
                 </UnorderedList>
-              </HStack>
+              </HStack> */}
               <Box // 캐릭터 상자
                 p={4}
                 borderWidth="1px"
@@ -1068,32 +656,21 @@ export default function CharacterPage() {
                 </Flex>
               </Box>
             </Box>
-
-            {/* </Center> */}
-            {/* <Center> */}
-            {testItemHistoryDict && (
+            {itemHistoryDict && (
               <Box>
                 <ItemTable
-                  itemHistory={itemHistoryDict}
                   isAdventure={false}
-                  testItemHistory={testItemHistoryDict}
+                  adventureHistory={itemHistoryDict}
                 />
               </Box>
             )}
           </HStack>
-          {/* </Center> */}
-          {/* <Center> */}
           {characterHistory && characterHistory.weaponList && (
             <WeaponList weaponList={characterHistory.weaponList} />
           )}
-          {/* <WeaponList weaponList={characterHistory && characterHistory.weaponList} /> */}
           {characterHistory && characterHistory.potList && (
             <PotList potList={characterHistory.potList} />
           )}
-          {/* <PotList potList={characterHistory && characterHistory.potList} /> */}
-          {/* <Flex direction="column" gap={4}>
-            </Flex> */}
-          {/* </Center> */}
         </Center>
       ) : (
         <Center minHeight="600px" gap={4}>

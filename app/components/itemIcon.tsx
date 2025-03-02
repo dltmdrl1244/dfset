@@ -73,7 +73,7 @@ interface ItemIconProps {
   slotIdx: number;
   historyItem?: HistoryItem;
   isAdventure: boolean;
-  testItemHistory: TestAdventureCharacterHistory;
+  adventureHistory: AdventureCharacterHistory;
 }
 
 export const ItemIcon: React.FC<ItemIconProps> = ({
@@ -81,26 +81,26 @@ export const ItemIcon: React.FC<ItemIconProps> = ({
   slotIdx,
   historyItem,
   isAdventure,
-  testItemHistory,
+  adventureHistory,
 }) => {
   const itemKey = setIdx * itemSets.length + slotIdx;
 
   const imgURL =
-    itemKey in testItemHistory.highest
-      ? `https://img-api.neople.co.kr/df/items/${testItemHistory.highest[itemKey].itemId}`
+    itemKey in adventureHistory.highest
+      ? `https://img-api.neople.co.kr/df/items/${adventureHistory.highest[itemKey].itemId}`
       : `/set115/1.png`;
   const { colorMode, toggleColorMode } = useColorMode();
 
   return (
     <Center>
-      {testItemHistory.highest[itemKey] && (
+      {itemKey in adventureHistory.highest && (
         <Popover>
           <PopoverTrigger>
             <Center
               width="48px"
               height="48px"
               border={`4px solid ${getRarityColor(
-                testItemHistory.highest[itemKey].rarity
+                adventureHistory.highest[itemKey].rarity
               )}`}>
               <Center>
                 <Image src={imgURL} boxSize="40px" />
@@ -119,120 +119,69 @@ export const ItemIcon: React.FC<ItemIconProps> = ({
             </PopoverHeader>
             <PopoverBody overflowY="auto" maxHeight="200px">
               <Flex direction="column" gap={1}>
-                {
-                  isAdventure ? (
-                    <>
-                      {Object.entries(testItemHistory.characters).map(
-                        ([characterName, characterHistory], characterIdx) =>
-                          characterHistory.histories[itemKey] && (
+                {isAdventure ? (
+                  <>
+                    {Object.entries(adventureHistory.characters).map(
+                      ([characterName, characterHistory], characterIdx) =>
+                        characterHistory.histories[itemKey] && (
+                          <Flex
+                            key={`characterName${characterIdx}`}
+                            flexDirection={"column"}
+                            mt={characterIdx == 0 ? 0 : 2}>
+                            <CharacterNameBadge
+                              str={characterName}
+                              key={`characterNameBadge${characterIdx}`}
+                            />
+                            <Flex direction="column" gap={1} p={1}>
+                              {itemKey in characterHistory.histories &&
+                                characterHistory.histories[itemKey].map(
+                                  (historyItem, historyItemIdx) => (
+                                    <Flex
+                                      key={`itemHistory${characterIdx}-${historyItemIdx}`}
+                                      gap={2}>
+                                      <ItemRarityBadge
+                                        itemRarity={historyItem.item.rarity}
+                                      />
+                                      <ItemObtainBadge
+                                        obtainCode={historyItem.obtainCode}
+                                      />
+                                      <DateBadge date={historyItem.date} />
+                                    </Flex>
+                                  )
+                                )}
+                            </Flex>
+                          </Flex>
+                        )
+                    )}
+                  </>
+                ) : (
+                  Object.entries(adventureHistory.characters).map(
+                    ([_, characterHistory], idx) => (
+                      <Flex
+                        key={`itemHistory${setIdx}-${slotIdx}`}
+                        p={1}
+                        borderRadius="lg"
+                        gap={2}
+                        direction="column">
+                        {characterHistory.histories[itemKey].map(
+                          (historyItem, historyItemIdx) => (
                             <Flex
-                              key={`characterName${characterIdx}`}
-                              flexDirection={"column"}
-                              mt={characterIdx == 0 ? 0 : 2}>
-                              <CharacterNameBadge
-                                str={characterName}
-                                key={`characterNameBadge${characterIdx}`}
+                              key={`historyItem-${idx}-${historyItemIdx}`}
+                              gap={2}>
+                              <ItemRarityBadge
+                                itemRarity={historyItem.item.rarity}
                               />
-                              <Flex direction="column" gap={1} p={1}>
-                                {itemKey in characterHistory.histories &&
-                                  characterHistory.histories[itemKey].map(
-                                    (historyItem, historyItemIdx) => (
-                                      <Flex
-                                        key={`itemHistory${characterIdx}-${historyItemIdx}`}
-                                        gap={2}>
-                                        <ItemRarityBadge
-                                          itemRarity={historyItem.item.rarity}
-                                        />
-                                        <ItemObtainBadge
-                                          obtainCode={historyItem.obtainCode}
-                                        />
-                                        <DateBadge date={historyItem.date} />
-                                      </Flex>
-                                    )
-                                  )}
-                              </Flex>
+                              <ItemObtainBadge
+                                obtainCode={historyItem.obtainCode}
+                              />
+                              <DateBadge date={historyItem.date} />
                             </Flex>
                           )
-                      )}
-                    </>
-                  ) : (
-                    // historyItem.histories.map((history, characterIdx) => (
-                    //     <Flex
-                    //       key={`characterName${characterIdx}`}
-                    //       flexDirection={"column"}
-                    //       mt={characterIdx == 0 ? 0 : 2}>
-                    //       <CharacterNameBadge
-                    //         str={history.characterName}
-                    //         key={`characterNameBadge${characterIdx}`}
-                    //       />
-                    //       <UnorderedList
-                    //         key={`unorderedList${characterIdx}`}
-                    //         styleType={"none"}>
-                    //         {history.timelines.map((timeline, timelineIdx) => (
-                    //           <ListItem
-                    //             key={`itemHistory${characterIdx}-${timelineIdx}`}
-                    //             ml={-5}>
-                    //             <HStack p={1} borderRadius="lg" gap={2}>
-                    //               <ItemRarityBadge
-                    //                 itemRarity={timeline.item.rarity}
-                    //               />
-
-                    //               <ItemObtainBadge
-                    //                 obtainCode={timeline.obtainCode}
-                    //               />
-                    //               <DateBadge date={timeline.date} />
-                    //             </HStack>
-                    //           </ListItem>
-                    //         ))}
-                    //       </UnorderedList>
-                    //     </Flex>
-                    //   ))
-                    Object.entries(testItemHistory.characters).map(
-                      ([_, characterHistory], idx) => (
-                        <Flex
-                          key={`itemHistory${setIdx}-${slotIdx}`}
-                          p={1}
-                          borderRadius="lg"
-                          gap={2}
-                          direction="column">
-                          {characterHistory.histories[itemKey].map(
-                            (historyItem, historyItemIdx) => (
-                              <Flex
-                                key={`historyItem-${idx}-${historyItemIdx}`}
-                                gap={2}>
-                                <ItemRarityBadge
-                                  itemRarity={historyItem.item.rarity}
-                                />
-                                <ItemObtainBadge
-                                  obtainCode={historyItem.obtainCode}
-                                />
-                                <DateBadge date={historyItem.date} />
-                              </Flex>
-                            )
-                          )}
-                        </Flex>
-                      )
+                        )}
+                      </Flex>
                     )
                   )
-
-                  //  historyItem.histories.map((history, characterIdx) =>
-                  //     history.timelines.map((timeline, timelineIdx) => (
-                  //       <HStack
-                  //         key={`ItemHistory${setIdx}-${slotIdx}-${characterIdx}-${timelineIdx}`}
-                  //         p={1}
-                  //         borderRadius="lg"
-                  //         gap={2}>
-                  //         <ItemRarityBadge itemRarity={timeline.item.rarity} />{" "}
-                  //         |
-                  //         <ItemObtainBadge obtainCode={timeline.obtainCode} />
-                  //         <DateBadge date={timeline.date} />
-                  //         {isAdventure && (
-                  //           <CharacterNameBadge str={history.characterName} />
-                  //         )}
-                  //       </HStack>
-                  //     ))
-                  //   )
-                }
+                )}
               </Flex>
             </PopoverBody>
           </PopoverContent>

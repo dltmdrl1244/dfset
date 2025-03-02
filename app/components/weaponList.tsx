@@ -45,7 +45,7 @@ export const WeaponList: React.FC<WeaponListProps> = ({ weaponList }) => {
           <AccordionPanel overflowY="auto">
             <UnorderedList p={1} styleType={"none"} height="200px">
               <Flex direction={"column"} gap={3}>
-                {weaponList.map((item: Weapon, idx) => (
+                {weaponList.map((item: SimpleEquipment, idx) => (
                   <ListItem key={`weaponList${idx}`} ml={-5}>
                     <Flex gap={2} alignItems={"center"}>
                       <Image

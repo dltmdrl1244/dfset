@@ -45,7 +45,7 @@ export const PotList: React.FC<PotListProps> = ({ potList }) => {
           <AccordionPanel overflowY="auto">
             <UnorderedList p={1} styleType={"none"} height="200px">
               <Flex direction={"column"} gap={3}>
-                {potList.map((item: EquipmentType, idx) => (
+                {potList.map((item: SimpleEquipment, idx) => (
                   <ListItem key={`potList${idx}`} ml={-5}>
                     <Flex gap={2} alignItems="center">
                       <Image

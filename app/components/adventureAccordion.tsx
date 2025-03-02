@@ -25,7 +25,7 @@ export const AdventureAccordion: React.FC<AdventureAccordionProps> = ({
 }) => {
   const { colorMode, toggleColorMode } = useColorMode();
   const [adventureItemHistory, setAdventureItemHistory] =
-    useState<TestAdventureCharacterHistory>({
+    useState<AdventureCharacterHistory>({
       highest: {},
       characters: {},
     });
@@ -37,21 +37,19 @@ export const AdventureAccordion: React.FC<AdventureAccordionProps> = ({
       return;
     }
     setAdventureInfoLoading(true);
-    const tempAdventureItemHistory: TestAdventureCharacterHistory = {
+    const tempAdventureItemHistory: AdventureCharacterHistory = {
       highest: {},
       characters: {},
     };
 
     for (const character of characterList) {
       const response = await fetch(
-        `api/query/testHistory?characterId=${character.characterId}`
+        `api/query/history?characterId=${character.characterId}`
       );
       const data = await response.json();
 
       if (data.data) {
-        // console.log(data.data[0]);
-        const characterHistory: TestCharacterHistory =
-          data.data[0].history_dict;
+        const characterHistory: CharacterHistory = data.data.history_dict;
 
         tempAdventureItemHistory.characters[character.characterName] =
           characterHistory;
@@ -115,7 +113,7 @@ export const AdventureAccordion: React.FC<AdventureAccordionProps> = ({
 
               <ItemTable
                 isAdventure={true}
-                testItemHistory={adventureItemHistory}
+                adventureHistory={adventureItemHistory}
               />
             </Flex>
           </AccordionPanel>

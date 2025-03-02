@@ -45,7 +45,7 @@ export default function Home() {
         )}
       </VStack>
       {isSearched && <SearchResult searchResult={searchResult} />}
-      <HStack
+      {/* <HStack
         // width="500px"
         border="1px solid dimgray"
         p={4}
@@ -59,7 +59,7 @@ export default function Home() {
           캐릭터별로 재갱신을 부탁드립니다. <br></br>
           이용에 불편을 드려 죄송합니다.
         </Text>
-      </HStack>
+      </HStack> */}
     </BaseLayout>
   );
 }

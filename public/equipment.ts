@@ -1,4 +1,4 @@
-export const equipments: TestEquipmentResponse[] = [
+export const equipments: EquipmentResponse[] = [
   {
     item_id: "0065b9809763f1e36fe45d2f87ad08c9",
     item_name: "마나 액티베이션",

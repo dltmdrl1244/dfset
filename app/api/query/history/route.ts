@@ -22,22 +22,13 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: "no data" }, { status: 200 });
     }
   } catch (error) {
-    console.error(error);
-    return new NextResponse(
-      JSON.stringify({
-        message: "Internal server Error !",
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return NextResponse.json({ message: "Error" }, { status: 500 });
   }
 }
 
 export async function POST(req: NextRequest) {
   const myJson = await req.json();
-  const histories: ItemHistory = myJson.histories;
+  const histories: CharacterHistory = myJson.histories;
   const characterId: string = myJson.characterId;
   const sql = neon(`${process.env.DATABASE_URL}`);
 
@@ -45,12 +36,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid characterId" }, { status: 400 });
   }
 
-  if (!histories || typeof histories !== "object") {
-    return NextResponse.json(
-      { error: "Invalid timeline data" },
-      { status: 400 }
-    );
-  }
+  // if (!histories || typeof histories !== "object") {
+  //   return NextResponse.json(
+  //     { error: "Invalid timeline data" },
+  //     { status: 400 }
+  //   );
+  // }
 
   try {
     const data = await sql("SELECT * FROM history WHERE character_id = ($1)", [
