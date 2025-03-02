@@ -10,8 +10,8 @@ import {
   Button,
   HStack,
   useToast,
-  UnorderedList,
-  ListItem,
+  Switch,
+  Spacer,
 } from "@chakra-ui/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -48,6 +48,7 @@ export default function CharacterPage() {
   const [infoUpdating, setInfoUpdating] = useState<boolean>(false);
   const [infoLoaded, setInfoLoaded] = useState<boolean>(false);
   const [latestUpdate, setLatestUpdate] = useState<string>("");
+  const [isAnonymous, setIsAnonymous] = useState<boolean>(false);
 
   const [characterHistory, setCharacterHistory] =
     useState<CharacterHistory | null>(null);
@@ -546,6 +547,11 @@ export default function CharacterPage() {
     }
   }
 
+  function onChangeAnonymous(checked: boolean) {
+    console.log("checked is ", checked);
+    setIsAnonymous(checked);
+  }
+
   const characterImageUrl = infoLoaded
     ? `https://img-api.neople.co.kr/df/servers/${character?.serverId}/characters/${character?.characterId}?zoom=1`
     : ``;
@@ -579,81 +585,102 @@ export default function CharacterPage() {
                   </ListItem>
                 </UnorderedList>
               </HStack> */}
-              <Box // 캐릭터 상자
-                p={4}
-                borderWidth="1px"
-                borderRadius="md"
-                mt={5}
-                borderColor="dimgray"
-                width="240px"
-                minWidth="240px"
-                boxShadow="base">
-                <Image
-                  src={characterImageUrl}
-                  mt={-10}
-                  ml={1.5}
-                  alt="characterImageURL"
-                />
-                <Flex direction="column">
-                  <Center flexDirection={"column"}>
-                    <Text as="b" fontSize={"lg"}>
-                      {character?.characterName}
-                    </Text>
-                    {/* <Text fontSize="sm">{character?.adventureName}</Text> */}
-                    {character?.adventureName && (
-                      <Link
-                        href={{
-                          pathname: `adventure`,
-                          query: {
-                            adventure: character.adventureName,
-                          },
-                        }}>
-                        <Text fontSize="sm" color={"teal"} as="b">
-                          {character.adventureName}
-                        </Text>
-                      </Link>
-                    )}
-                  </Center>
-                  <Center>
-                    {getServerName(character?.serverId)} | {character?.jobName}
-                  </Center>
-                  <Box mt={3} borderTop={`1px solid #696969`} p={4}>
-                    <Box>
-                      <Text>
-                        획득한 태초 : {characterHistory?.itemCount[2]}
-                      </Text>
-                      <Text>
-                        획득한 에픽 : {characterHistory?.itemCount[1]}
-                      </Text>
-                      <Text>
-                        획득한 레전더리 : {characterHistory?.itemCount[0]}
-                      </Text>
-                    </Box>
-
-                    <Flex direction="column" mt={2}>
-                      {infoUpdating ? (
-                        <Button colorScheme="teal" isLoading>
-                          갱신
-                        </Button>
-                      ) : (
-                        <Button
-                          colorScheme="teal"
-                          onClick={() => {
-                            handleUpdateButtonClicked();
-                          }}>
-                          갱신
-                        </Button>
-                      )}
-
-                      <Text fontSize="sm" mt={1}>
-                        최근 업데이트:
-                      </Text>
-                      <Text fontSize="xs">
-                        {convertToKSTMinute(latestUpdate)}
-                      </Text>
-                    </Flex>
-                  </Box>
+              <Box>
+                <Flex>
+                  <Spacer />
+                  <HStack>
+                    <Text>익명</Text>
+                    <Switch
+                      checked={isAnonymous}
+                      onChange={({ target: { checked } }) =>
+                        onChangeAnonymous(checked)
+                      }
+                    />
+                  </HStack>
                 </Flex>
+                <Box // 캐릭터 상자
+                  p={4}
+                  borderWidth="1px"
+                  borderRadius="md"
+                  mt={2}
+                  borderColor="dimgray"
+                  width="240px"
+                  minWidth="240px"
+                  boxShadow="base">
+                  <Image
+                    src={isAnonymous ? "/anonymous.png" : characterImageUrl}
+                    mt={-10}
+                    ml={1.5}
+                    alt="characterImageURL"
+                  />
+                  <Flex direction="column">
+                    <Center flexDirection={"column"}>
+                      <Text as="b" fontSize={"lg"}>
+                        {isAnonymous
+                          ? "익명의 모험가"
+                          : character?.characterName}
+                      </Text>
+                      {/* <Text fontSize="sm">{character?.adventureName}</Text> */}
+                      {!isAnonymous && character?.adventureName && (
+                        <Link
+                          href={{
+                            pathname: `adventure`,
+                            query: {
+                              adventure: character.adventureName,
+                            },
+                          }}>
+                          <Text fontSize="sm" color={"teal"} as="b">
+                            {character.adventureName}
+                          </Text>
+                        </Link>
+                      )}
+                    </Center>
+                    <Center>
+                      {!isAnonymous &&
+                        `${getServerName(character?.serverId)} | ${
+                          character.jobName
+                        }`}
+                      {/* {getServerName(character?.serverId)} |{" "}
+                      {character?.jobName} */}
+                    </Center>
+                    <Box mt={3} borderTop={`1px solid #696969`} p={4}>
+                      <Box>
+                        <Text>
+                          획득한 태초 : {characterHistory?.itemCount[2]}
+                        </Text>
+                        <Text>
+                          획득한 에픽 : {characterHistory?.itemCount[1]}
+                        </Text>
+                        <Text>
+                          획득한 레전더리 : {characterHistory?.itemCount[0]}
+                        </Text>
+                      </Box>
+
+                      <Flex direction="column" mt={2}>
+                        {infoUpdating ? (
+                          <Button colorScheme="teal" isLoading>
+                            갱신
+                          </Button>
+                        ) : (
+                          <Button
+                            colorScheme="teal"
+                            onClick={() => {
+                              handleUpdateButtonClicked();
+                            }}>
+                            갱신
+                          </Button>
+                        )}
+
+                        <Text fontSize="sm" mt={1}>
+                          최근 업데이트:
+                        </Text>
+                        <Text fontSize="xs">
+                          {convertToKSTMinute(latestUpdate)}
+                        </Text>
+                      </Flex>
+                    </Box>
+                  </Flex>
+                </Box>
               </Box>
             </Box>
             {itemHistoryDict && (
