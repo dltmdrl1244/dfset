@@ -162,7 +162,7 @@ export const ItemTable: React.FC<ItemTableProps> = ({
                   <Tooltip label={set.setName}>
                     <Center>
                       {setIdx != 12 ? (
-                        <Image src={`/set115/${setIdx + 1}.png`} />
+                        <Image src={`/set115/${setIdx + 1}-1.png`} />
                       ) : (
                         <Text color="black">고유</Text>
                       )}
