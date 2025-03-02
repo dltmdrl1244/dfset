@@ -58,11 +58,13 @@ const DateBadge: React.FC<DateBadgeProps> = ({ date }) => {
 function getRarityColor(rarity: number) {
   switch (rarity) {
     case 2:
-      return "#28D931";
+      return `linear-gradient(180deg, #28d931, #33acea)`;
     case 1:
-      return "#FFB400";
+      return `linear-gradient(180deg, #FFB400, #FFB400)`;
+    // return "#FFB400";
     case 0:
-      return "#b25400";
+      // return "#b25400";
+      return `linear-gradient(180deg, #b25400, #b25400)`;
     default:
       return "";
   }
@@ -99,9 +101,13 @@ export const ItemIcon: React.FC<ItemIconProps> = ({
             <Center
               width="48px"
               height="48px"
-              border={`4px solid ${getRarityColor(
-                adventureHistory.highest[itemKey].rarity
-              )}`}>
+              border="4px solid transparent"
+              css={`
+                border-image: ${getRarityColor(
+                  adventureHistory.highest[itemKey].rarity
+                )};
+                border-image-slice: 1;
+              `}>
               <Center>
                 <Image src={imgURL} boxSize="40px" />
               </Center>
