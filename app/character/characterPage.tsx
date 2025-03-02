@@ -908,8 +908,8 @@ export default function CharacterPage() {
     // 데이터 반영
     setItemHistoryDict({ ...tempItemHistoryDict });
     setItemCountArray([...tempItemCountArray]);
-    setWeaponList([...tempWeaponList]);
-    setPotList([...tempPotList]);
+    // setWeaponList([...tempWeaponList]);
+    // setPotList([...tempPotList]);
     // setHighestRarityItemDict({ ...tempHighestRarityDict });
     saveCharacterHistory(tempItemHistoryDict);
 
