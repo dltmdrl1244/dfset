@@ -12,6 +12,7 @@ import {
   useToast,
   Switch,
   Spacer,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -552,6 +553,45 @@ export default function CharacterPage() {
     setIsAnonymous(checked);
   }
 
+  async function historyDeleteButtonClicked() {
+    if (
+      confirm(
+        "캐릭터 정보를 초기화할까요? 아이템 정보가 누락됐을 경우 사용해주세요."
+      )
+    ) {
+      if (await deleteCharacterHistory()) {
+        alert("캐릭터 정보가 초기화되었습니다.");
+        location.reload();
+      } else {
+        alert("에러가 발생했습니다.");
+      }
+    }
+  }
+
+  async function deleteCharacterHistory() {
+    if (!character) {
+      return false;
+    }
+
+    try {
+      const response = await fetch(
+        `api/query/history?characterId=${character?.characterId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const data = await response.json();
+
+      console.log(response);
+      console.log(data);
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
+
   const characterImageUrl = infoLoaded
     ? `https://img-api.neople.co.kr/df/servers/${character?.serverId}/characters/${character?.characterId}?zoom=1`
     : ``;
@@ -560,31 +600,8 @@ export default function CharacterPage() {
     <BaseLayout>
       {infoLoaded && character ? (
         <Center gap={4} flexWrap={"wrap"} p={5}>
-          {/* <Center> */}
           <HStack gap={10}>
             <Box>
-              {/* <HStack
-                width="240px"
-                border="1px solid dimgray"
-                p={4}
-                borderRadius="md">
-                <InfoIcon />
-                <UnorderedList>
-                  <ListItem>
-                    <Text fontSize={"xs"}>흑아 장비는 조회되지 않습니다.</Text>
-                  </ListItem>
-                  <ListItem>
-                    <Text fontSize={"xs"}>
-                      초월로 넘긴/넘겨받은 정보는 조회되지 않습니다.
-                    </Text>
-                  </ListItem>
-                  <ListItem>
-                    <Text fontSize={"xs"}>
-                      두 기능 모두 업데이트 예정입니다.
-                    </Text>
-                  </ListItem>
-                </UnorderedList>
-              </HStack> */}
               <Box>
                 <Flex>
                   <Spacer />
@@ -677,10 +694,19 @@ export default function CharacterPage() {
                         <Text fontSize="xs">
                           {convertToKSTMinute(latestUpdate)}
                         </Text>
+                        <Tooltip label="아이템 정보가 누락됐을 경우 사용해주세요.">
+                          <Button
+                            colorScheme="teal"
+                            onClick={historyDeleteButtonClicked}
+                            mt={5}>
+                            캐릭터 정보 초기화
+                          </Button>
+                        </Tooltip>
                       </Flex>
                     </Box>
                   </Flex>
-                </Box>
+                </Box>{" "}
+                {/* 캐릭터 상자*/}
               </Box>
             </Box>
             {itemHistoryDict && (

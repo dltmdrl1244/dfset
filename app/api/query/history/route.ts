@@ -74,3 +74,23 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const characterId = searchParams.get("characterId");
+  const sql = neon(`${process.env.DATABASE_URL}`);
+
+  if (!characterId || typeof characterId !== "string") {
+    return NextResponse.json({ error: "Invalid characterId" }, { status: 400 });
+  }
+
+  try {
+    const rv = await sql("DELETE FROM history WHERE character_id = ($1)", [
+      characterId,
+    ]);
+
+    return NextResponse.json({ data: rv, message: "OK" }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ message: "Error" }, { status: 500 });
+  }
+}
