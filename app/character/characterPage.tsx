@@ -172,10 +172,10 @@ export default function CharacterPage() {
         });
 
         const testCharacterHistory: CharacterHistory | undefined =
-          testMakeCharacterHistory(rv);
+          makeCharacterHistory(rv, null);
         if (testCharacterHistory) {
           setCharacterHistory(testCharacterHistory);
-          testSaveCharacterHistory(character, testCharacterHistory);
+          saveCharacterHistory(character, testCharacterHistory);
           setLatestUpdate(dayjs().toISOString());
         }
       }
@@ -197,6 +197,7 @@ export default function CharacterPage() {
       const data = await response.json();
 
       if (data.data) {
+        const testCCC: CharacterHistory = data.data.history_dict;
         const createTime: string = data.data.create_time;
         const rv: HistoryItem[] = await getCharacterTimelineFromAPI(
           targetCharacter,
@@ -208,8 +209,18 @@ export default function CharacterPage() {
           const dateB = dayjs(b.date);
           return dateA.isBefore(dateB, "minute") ? -1 : 1;
         });
-        addCharacterHistory(rv);
-        setLatestUpdate(dayjs().toISOString());
+        // TODO : return으로 바꾸고 makeCharacterHistory랑 통일
+        //
+        // addCharacterHistory(rv);
+        const testCharacterHistory: CharacterHistory | undefined =
+          makeCharacterHistory(rv, testCCC);
+        console.log("testCharacterHistory", testCharacterHistory);
+        if (testCharacterHistory) {
+          setCharacterHistory(testCharacterHistory);
+          saveCharacterHistory(targetCharacter, testCharacterHistory);
+          setLatestUpdate(dayjs().toISOString());
+        }
+        // setLatestUpdate(dayjs().toISOString());
       }
     } catch (error) {
       console.error(error);
@@ -217,61 +228,62 @@ export default function CharacterPage() {
 
     setInfoUpdating(false);
   }
-  function addCharacterHistory(historyItems: HistoryItem[]) {
-    if (!character || !characterHistory) {
-      return;
-    }
 
-    let tempCharacterHistory = characterHistory;
+  // function addCharacterHistory(historyItems: HistoryItem[]) {
+  //   if (!character || !characterHistory) {
+  //     return;
+  //   }
 
-    for (const historyItem of historyItems) {
-      const itemKey: number =
-        historyItem.item.setIdx * itemSets.length + historyItem.item.slotIdx;
+  //   let tempCharacterHistory = characterHistory;
 
-      // highest 갱신
-      if (
-        !(itemKey in tempCharacterHistory.highest) ||
-        historyItem.item.rarity > tempCharacterHistory.highest[itemKey].rarity
-      ) {
-        tempCharacterHistory.highest[itemKey] = {
-          itemId: historyItem.item.itemId,
-          rarity: historyItem.item.rarity,
-        };
-      }
-      // histories에 추가
-      if (itemKey in tempCharacterHistory.histories) {
-        tempCharacterHistory.histories[itemKey].push(historyItem);
-      } else {
-        tempCharacterHistory.histories[itemKey] = [historyItem];
-      }
+  //   for (const historyItem of historyItems) {
+  //     const itemKey: number =
+  //       historyItem.item.setIdx * itemSets.length + historyItem.item.slotIdx;
 
-      // 3. itemCount 갱신
-      tempCharacterHistory.itemCount[historyItem.item.rarity]++;
+  //     // highest 갱신
+  //     if (
+  //       !(itemKey in tempCharacterHistory.highest) ||
+  //       historyItem.item.rarity > tempCharacterHistory.highest[itemKey].rarity
+  //     ) {
+  //       tempCharacterHistory.highest[itemKey] = {
+  //         itemId: historyItem.item.itemId,
+  //         rarity: historyItem.item.rarity,
+  //       };
+  //     }
+  //     // histories에 추가
+  //     if (itemKey in tempCharacterHistory.histories) {
+  //       tempCharacterHistory.histories[itemKey].push(historyItem);
+  //     } else {
+  //       tempCharacterHistory.histories[itemKey] = [historyItem];
+  //     }
 
-      // 4. weaponList
-      if (historyItem.item.weaponType != "") {
-        tempCharacterHistory.weaponList.push({
-          itemId: historyItem.item.itemId,
-          itemName: historyItem.item.itemName,
-          rarity: historyItem.item.rarity,
-        });
-      }
+  //     // 3. itemCount 갱신
+  //     tempCharacterHistory.itemCount[historyItem.item.rarity]++;
 
-      // 5. potList
-      if (historyItem.obtainCode === 504) {
-        tempCharacterHistory.potList.push({
-          itemId: historyItem.item.itemId,
-          itemName: historyItem.item.itemName,
-          rarity: historyItem.item.rarity,
-        });
-      }
-    }
+  //     // 4. weaponList
+  //     if (historyItem.item.weaponType != "") {
+  //       tempCharacterHistory.weaponList.push({
+  //         itemId: historyItem.item.itemId,
+  //         itemName: historyItem.item.itemName,
+  //         rarity: historyItem.item.rarity,
+  //       });
+  //     }
 
-    setCharacterHistory(tempCharacterHistory);
-    testSaveCharacterHistory(character, tempCharacterHistory);
-  }
+  //     // 5. potList
+  //     if (historyItem.obtainCode === 504) {
+  //       tempCharacterHistory.potList.push({
+  //         itemId: historyItem.item.itemId,
+  //         itemName: historyItem.item.itemName,
+  //         rarity: historyItem.item.rarity,
+  //       });
+  //     }
+  //   }
 
-  async function testSaveCharacterHistory(
+  //   setCharacterHistory(tempCharacterHistory);
+  //   testSaveCharacterHistory(character, tempCharacterHistory);
+  // }
+
+  async function saveCharacterHistory(
     targetCharacter: Character,
     characterHistory: CharacterHistory
   ) {
@@ -320,39 +332,122 @@ export default function CharacterPage() {
     return null;
   }
 
-  function testMakeCharacterHistory(timelineInfos: HistoryItem[]) {
+  function makeCharacterHistory(
+    timelineInfos: HistoryItem[],
+    prevHistory: CharacterHistory | null
+  ) {
     if (!character) {
       return;
     }
 
+    let tempCharacterHistory: CharacterHistory;
+    if (!prevHistory) {
+      // 0. 생성 및 characterInfo 설정
+      tempCharacterHistory = {
+        characterInfo: {
+          characterId: character.characterId,
+          characterName: character.characterName,
+        },
+        highest: {},
+        histories: {},
+        itemCount: [0, 0, 0],
+        weaponList: [],
+        potList: [],
+      };
+    } else {
+      tempCharacterHistory = prevHistory;
+    }
+
     // 0. 생성 및 characterInfo 설정
-    let tempCharacterHistory: CharacterHistory = {
-      characterInfo: {
-        characterId: character.characterId,
-        characterName: character.characterName,
-      },
-      highest: {},
-      histories: {},
-      itemCount: [0, 0, 0],
-      weaponList: [],
-      potList: [],
-    };
+    // let tempCharacterHistory: CharacterHistory = {
+    //   characterInfo: {
+    //     characterId: character.characterId,
+    //     characterName: character.characterName,
+    //   },
+    //   highest: {},
+    //   histories: {},
+    //   itemCount: [0, 0, 0],
+    //   weaponList: [],
+    //   potList: [],
+    // };
 
     for (const tl of timelineInfos) {
       // 아이템키
       const itemKey: number =
         tl.item.setIdx * itemSets.length + tl.item.slotIdx;
 
-      // 1. highest 갱신
-      if (
-        !(itemKey in tempCharacterHistory.highest) ||
-        tl.item.rarity > tempCharacterHistory.highest[itemKey].rarity
-      ) {
-        tempCharacterHistory.highest[itemKey] = {
-          itemId: tl.item.itemId,
-          rarity: tl.item.rarity,
-        };
+      // 초월 넣은것 처리
+      if (tl.obtainCode == 5161) {
+        if (!(itemKey in tempCharacterHistory.highest)) {
+          console.error("error beyond history");
+          continue;
+        }
+        const currentHighestItem: HighestItem =
+          tempCharacterHistory.highest[itemKey][
+            tempCharacterHistory.highest[itemKey].length - 1
+          ];
+        if (currentHighestItem.count <= 0) {
+          console.error("error beyond history");
+          continue;
+        }
+
+        if (currentHighestItem.count == 1) {
+          tempCharacterHistory.highest[itemKey].pop();
+        } else {
+          tempCharacterHistory.highest[itemKey][
+            tempCharacterHistory.highest[itemKey].length - 1
+          ] = {
+            rarity: currentHighestItem.rarity,
+            itemId: currentHighestItem.itemId,
+            count: currentHighestItem.count - 1,
+          };
+        }
+      } else {
+        // 초월out을 포함한 일반 케이스
+        if (!(itemKey in tempCharacterHistory.highest)) {
+          tempCharacterHistory.highest[itemKey] = [
+            {
+              rarity: tl.item.rarity,
+              itemId: tl.item.itemId,
+              count: 1,
+            },
+          ];
+        } else if (
+          tl.item.rarity >
+          tempCharacterHistory.highest[itemKey][
+            tempCharacterHistory.highest[itemKey].length - 1
+          ].rarity
+        ) {
+          tempCharacterHistory.highest[itemKey].push({
+            rarity: tl.item.rarity,
+            itemId: tl.item.itemId,
+            count: 1,
+          });
+        } else {
+          tempCharacterHistory.highest[itemKey][
+            tempCharacterHistory.highest[itemKey].length - 1
+          ] = {
+            ...tempCharacterHistory.highest[itemKey][
+              tempCharacterHistory.highest[itemKey].length - 1
+            ],
+            count:
+              tempCharacterHistory.highest[itemKey][
+                tempCharacterHistory.highest[itemKey].length - 1
+              ].count + 1,
+          };
+        }
       }
+
+      // 1. highest 갱신
+      // if (
+      //   !(itemKey in tempCharacterHistory.highest) ||
+      //   tl.item.rarity > tempCharacterHistory.highest[itemKey].rarity
+      // ) {
+      //   tempCharacterHistory.highest[itemKey] = {
+      //     itemId: tl.item.itemId,
+      //     rarity: tl.item.rarity,
+      //   };
+      // }
 
       // 2. historyItem 만들어서 histories에 추가
       if (itemKey in tempCharacterHistory.histories) {
@@ -365,7 +460,7 @@ export default function CharacterPage() {
       tempCharacterHistory.itemCount[tl.item.rarity]++;
 
       // 4. weaponList
-      if (tl.item.weaponType != "") {
+      if (tl.obtainCode != 5160 && tl.item.weaponType != "") {
         tempCharacterHistory.weaponList.push({
           itemId: tl.item.itemId,
           itemName: tl.item.itemName,
@@ -433,7 +528,21 @@ export default function CharacterPage() {
               if (!foundItem) {
                 continue;
               }
-              const timelineInfo: HistoryItem = {
+
+              if (res.code == 516) {
+                // 아이템 초월
+                const beyondHistoryItem: HistoryItem = {
+                  item: foundItem,
+                  obtainCode:
+                    timeline.data.adventureSafeMoveType == "in" ? 5161 : 5160,
+                  date: timeline.date,
+                };
+
+                tempTimelines.push(beyondHistoryItem);
+                continue;
+              }
+
+              const timelineInfo: NormalHistoryItem = {
                 item: foundItem,
                 obtainCode: res.code,
                 date: res.date,
@@ -499,7 +608,7 @@ export default function CharacterPage() {
     const temp: AdventureCharacterHistory = {
       highest: characterHistory.highest,
       characters: {
-        [character.adventureName]: characterHistory,
+        [character.characterName]: characterHistory,
       },
     };
     setItemHistoryDict(temp);
@@ -714,6 +823,7 @@ export default function CharacterPage() {
                 <ItemTable
                   isAdventure={false}
                   adventureHistory={itemHistoryDict}
+                  character={character}
                 />
               </Box>
             )}

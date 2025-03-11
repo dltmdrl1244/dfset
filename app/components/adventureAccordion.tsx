@@ -50,20 +50,64 @@ export const AdventureAccordion: React.FC<AdventureAccordionProps> = ({
 
       if (data.data) {
         const characterHistory: CharacterHistory = data.data.history_dict;
-
         tempAdventureItemHistory.characters[character.characterName] =
           characterHistory;
 
-        Object.entries(characterHistory.highest).map(([key, highestInfo]) => {
-          const itemKey = Number(key);
-          if (
-            !(itemKey in tempAdventureItemHistory.highest) ||
-            highestInfo.rarity >
-              tempAdventureItemHistory.highest[itemKey].rarity
-          ) {
-            tempAdventureItemHistory.highest[itemKey] = highestInfo;
+        for (const [key, highestItems] of Object.entries(
+          characterHistory.highest
+        )) {
+          if (highestItems.length <= 0) {
+            continue;
           }
-        });
+          const itemKey = Number(key);
+          const highestItem = highestItems[highestItems.length - 1];
+          if (!(itemKey in tempAdventureItemHistory.highest)) {
+            tempAdventureItemHistory.highest[itemKey] = [highestItem];
+          } else if (
+            tempAdventureItemHistory.highest[itemKey].length > 0 &&
+            tempAdventureItemHistory.highest[itemKey][
+              tempAdventureItemHistory.highest[itemKey].length - 1
+            ].rarity < highestItem.rarity
+          ) {
+            tempAdventureItemHistory.highest[itemKey].push(highestItem);
+          }
+        }
+        // Object.entries(characterHistory.highest).map(([key, highestItems]) => {
+        //   const itemKey = Number(key);
+        //   // if (
+        //   //   !(itemKey in tempAdventureItemHistory.highest) ||
+        //   //   highestInfo[highestInfo.length - 1].rarity >
+        //   //     tempAdventureItemHistory.highest[itemKey][tempAdventureItemHistory.highest[itemKey].length - 1].rarity
+        //   // ) {
+        //   //   tempAdventureItemHistory.highest[itemKey] = highestInfo;
+        //   // }
+        //   const highestItem = highestItems[highestItems.length - 1];
+        //   console.log("highest : ", highestItem);
+        //   if (!(itemKey in tempAdventureItemHistory.highest)) {
+        //     tempAdventureItemHistory.highest[itemKey] = [highestItem];
+        //   } else if (
+        //     tempAdventureItemHistory.highest[itemKey][
+        //       tempAdventureItemHistory.highest[itemKey].length - 1
+        //     ].rarity < highestItem.rarity
+        //   ) {
+        //     tempAdventureItemHistory.highest[itemKey].push(highestItem);
+        //   }
+
+        //   // if (!(itemKey in tempAdventureItemHistory.highest)) {
+        //   //   tempAdventureItemHistory.highest[itemKey] = [
+        //   //     highestItems[highestItems.length - 1],
+        //   //   ];
+        //   // } else if (
+        //   //   highestItems[highestItems.length - 1].rarity >
+        //   //   tempAdventureItemHistory.highest[itemKey][
+        //   //     tempAdventureItemHistory.highest[itemKey].length - 1
+        //   //   ].rarity
+        //   // ) {
+        //   //   tempAdventureItemHistory.highest[itemKey].push(
+        //   //     highestItems[highestItems.length - 1]
+        //   //   );
+        //   // }
+        // });
       }
     }
     setAdventureInfoLoading(false);

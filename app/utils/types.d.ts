@@ -24,13 +24,13 @@ interface Character {
 type CharacterNameToCharacterHistory = Record<string, CharacterHistory>;
 
 interface AdventureCharacterHistory {
-  highest: Record<number, HighestItem>;
+  highest: Record<number, HighestItem[]>;
   characters: CharacterNameToCharacterHistory;
 }
 
 interface CharacterHistory {
   characterInfo: CharacterInfo;
-  highest: Record<number, HighestItem>;
+  highest: Record<number, HighestItem[]>;
   histories: Record<number, HistoryItem[]>;
   itemCount: itemCountArray;
   weaponList: SimpleEquipment[];
@@ -53,6 +53,7 @@ interface CharacterInfo {
 interface HighestItem {
   rarity: number;
   itemId: string;
+  count: number;
 }
 
 interface Equipment {
@@ -77,11 +78,14 @@ interface EquipmentResponse {
 
 interface HistoryItem {
   item: Equipment;
-  obtainCode: number;
+  obtainCode: number; // 초월 넘겨준것은 5161, 받은것은 5160
+  date: string;
+}
+
+interface NormalHistoryItem extends HistoryItem {
   dungeonName: string;
   channelName: string;
   channelNo: number;
-  date: string;
 }
 
 interface TimelineResponse {
@@ -108,4 +112,11 @@ interface TimelineInfo {
   channelName?: string; // code가 513이면 없음
   channelNo?: number; // code가 513이면 없음
   dungeonName?: string; // code가 504이면 없음
+}
+
+interface BeyondItemInfo {
+  id: string;
+  rarity: number;
+  slotIdx: number;
+  setIdx: number;
 }

@@ -9,6 +9,15 @@ interface SetPointBadgeProps {
   point: number;
 }
 
+interface BadgeTextProps {
+  str: string;
+}
+
+interface BadgeTextColorProps {
+  str: string;
+  color: string;
+}
+
 const rareSetPoint = 750;
 const uniqueSetPoint = 1200;
 const legendarySetPoint = 1650;
@@ -22,6 +31,14 @@ export const ServerBadge: React.FC<ServerBadgeProps> = ({ serverId }) => {
   return (
     <Badge bgColor={"gray"} variant="solid" fontSize="sm">
       {server?.serverName}
+    </Badge>
+  );
+};
+
+export const TextBadge: React.FC<BadgeTextColorProps> = ({ str, color }) => {
+  return (
+    <Badge bgColor={color} variant="solid" fontSize="sm">
+      {str}
     </Badge>
   );
 };
@@ -142,10 +159,6 @@ export const SetPointBadge: React.FC<SetPointBadgeProps> = ({ point }) => {
     return <Text>{point}</Text>;
   }
 };
-
-interface BadgeTextProps {
-  str: string;
-}
 
 export const ItemObtainCodeBadge: React.FC<BadgeTextProps> = ({ str }) => {
   return (
