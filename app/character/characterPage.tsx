@@ -404,7 +404,10 @@ export default function CharacterPage() {
         }
       } else {
         // 초월out을 포함한 일반 케이스
-        if (!(itemKey in tempCharacterHistory.highest)) {
+        if (
+          !(itemKey in tempCharacterHistory.highest) ||
+          tempCharacterHistory.highest[itemKey].length <= 0
+        ) {
           tempCharacterHistory.highest[itemKey] = [
             {
               rarity: tl.item.rarity,
