@@ -5,6 +5,7 @@ import { neon } from "@neondatabase/serverless";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const characterId = searchParams.get("characterId");
+  const serverId = searchParams.get("serverId");
   const sql = neon(`${process.env.DATABASE_URL}`);
 
   if (!characterId || typeof characterId !== "string") {
@@ -12,9 +13,10 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const rv = await sql("SELECT * FROM history WHERE character_id = ($1)", [
-      characterId,
-    ]);
+    const rv = await sql(
+      "SELECT * FROM history WHERE character_id = ($1) and server_id = ($2)",
+      [characterId, serverId]
+    );
 
     if (rv.length > 0) {
       return NextResponse.json({ data: rv[0], message: "OK" }, { status: 200 });
@@ -30,6 +32,7 @@ export async function POST(req: NextRequest) {
   const myJson = await req.json();
   const histories: CharacterHistory = myJson.histories;
   const characterId: string = myJson.characterId;
+  const serverId: string = myJson.serverId;
   const sql = neon(`${process.env.DATABASE_URL}`);
 
   if (!characterId || typeof characterId !== "string") {
@@ -44,13 +47,14 @@ export async function POST(req: NextRequest) {
   // }
 
   try {
-    const data = await sql("SELECT * FROM history WHERE character_id = ($1)", [
-      characterId,
-    ]);
+    const data = await sql(
+      "SELECT * FROM history WHERE character_id = ($1) and server_id = ($2)",
+      [characterId, serverId]
+    );
     if (data.length <= 0) {
       await sql(
-        "INSERT INTO history (character_id, history_dict) VALUES ($1, $2)",
-        [characterId, JSON.stringify(histories)]
+        "INSERT INTO history (character_id, server_id, history_dict) VALUES ($1, $2, $3)",
+        [characterId, serverId, JSON.stringify(histories)]
       );
       return NextResponse.json(
         { message: "Items added successfully" },
@@ -58,8 +62,8 @@ export async function POST(req: NextRequest) {
       );
     } else {
       await sql(
-        "UPDATE history SET history_dict = ($1), create_time = CURRENT_TIMESTAMP WHERE character_id = ($2)",
-        [JSON.stringify(histories), characterId]
+        "UPDATE history SET history_dict = ($1), create_time = CURRENT_TIMESTAMP WHERE character_id = ($2) and server_id = ($3)",
+        [JSON.stringify(histories), characterId, serverId]
       );
       return NextResponse.json(
         { message: "Items updated successfully" },
@@ -78,6 +82,7 @@ export async function POST(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const characterId = searchParams.get("characterId");
+  const serverId = searchParams.get("serverId");
   const sql = neon(`${process.env.DATABASE_URL}`);
 
   if (!characterId || typeof characterId !== "string") {
@@ -85,9 +90,10 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
-    const rv = await sql("DELETE FROM history WHERE character_id = ($1)", [
-      characterId,
-    ]);
+    const rv = await sql(
+      "DELETE FROM history WHERE character_id = ($1) and server_id = ($2)",
+      [characterId, serverId]
+    );
 
     return NextResponse.json({ data: rv, message: "OK" }, { status: 200 });
   } catch (error) {

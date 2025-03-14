@@ -5,6 +5,8 @@ import { neon } from "@neondatabase/serverless";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const characterId = searchParams.get("characterId");
+  const serverId = searchParams.get("serverId");
+
   const sql = neon(`${process.env.DATABASE_URL}`);
 
   if (!characterId || typeof characterId !== "string") {
@@ -12,9 +14,10 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const rv = await sql("SELECT * FROM character WHERE character_id = ($1)", [
-      characterId,
-    ]);
+    const rv = await sql(
+      "SELECT * FROM character WHERE character_id = ($1) and server_id = ($2)",
+      [characterId, serverId]
+    );
 
     if (rv.length > 0) {
       return NextResponse.json({ data: rv[0], message: "OK" }, { status: 200 });

@@ -92,6 +92,7 @@ export default function CharacterPage() {
     }
     const params = new URLSearchParams();
     params.set("characterId", characterId);
+    params.set("serverId", serverId);
     try {
       const response = await fetch(`api/query/character?${params.toString()}`);
       const data = await response.json();
@@ -148,7 +149,7 @@ export default function CharacterPage() {
 
     try {
       const response = await fetch(
-        `api/query/history?characterId=${character.characterId}`
+        `api/query/history?characterId=${character.characterId}&serverId=${character.serverId}`
       );
       const data = await response.json();
 
@@ -192,7 +193,7 @@ export default function CharacterPage() {
 
     try {
       const response = await fetch(
-        `api/query/history?characterId=${targetCharacter.characterId}`
+        `api/query/history?characterId=${targetCharacter.characterId}&serverId=${targetCharacter.serverId}`
       );
       const data = await response.json();
 
@@ -299,6 +300,7 @@ export default function CharacterPage() {
         },
         body: JSON.stringify({
           characterId: targetCharacter?.characterId,
+          serverId: targetCharacter.serverId,
           histories: characterHistory,
         }),
       });
@@ -687,7 +689,7 @@ export default function CharacterPage() {
 
     try {
       const response = await fetch(
-        `api/query/history?characterId=${character?.characterId}`,
+        `api/query/history?characterId=${character?.characterId}&serverId=${character.serverId}`,
         {
           method: "DELETE",
         }
