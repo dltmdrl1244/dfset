@@ -23,6 +23,12 @@ export default function RootLayout({
 }>) {
   return (
     <html suppressHydrationWarning>
+      <head>
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9624261648784529"
+          crossOrigin="anonymous"></script>
+      </head>
       <body className={notoSansKr.className}>
         <Analytics />
         <ChakraProvider>{children}</ChakraProvider>
