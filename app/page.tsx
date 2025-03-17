@@ -57,10 +57,10 @@ export default function Home() {
         mb={10}>
         <InfoIcon />
         <Box>
-          <TextBadge str="2025.03.11" color="gray" />
+          <TextBadge str="2025.03.17" color="gray" />
           <Text fontSize="sm" mt={2}>
-            초월 기록을 반영하도록 업데이트했습니다. <br></br>
-            데이터 구조가 변경되어, 캐릭터별로 초기화를 한 번씩 부탁드립니다.
+            현재 모험단 전체 테이블 조회가 불가능합니다. <br></br>
+            오류 수정 중입니다. 이용에 불편을 드려 죄송합니다.
           </Text>
         </Box>
       </HStack>
