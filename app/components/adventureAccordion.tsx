@@ -44,7 +44,7 @@ export const AdventureAccordion: React.FC<AdventureAccordionProps> = ({
 
     for (const character of characterList) {
       const response = await fetch(
-        `api/query/history?characterId=${character.characterId}`
+        `api/query/history?characterId=${character.characterId}&serverId=${character.serverId}`
       );
       const data = await response.json();
 
@@ -72,42 +72,6 @@ export const AdventureAccordion: React.FC<AdventureAccordionProps> = ({
             tempAdventureItemHistory.highest[itemKey].push(highestItem);
           }
         }
-        // Object.entries(characterHistory.highest).map(([key, highestItems]) => {
-        //   const itemKey = Number(key);
-        //   // if (
-        //   //   !(itemKey in tempAdventureItemHistory.highest) ||
-        //   //   highestInfo[highestInfo.length - 1].rarity >
-        //   //     tempAdventureItemHistory.highest[itemKey][tempAdventureItemHistory.highest[itemKey].length - 1].rarity
-        //   // ) {
-        //   //   tempAdventureItemHistory.highest[itemKey] = highestInfo;
-        //   // }
-        //   const highestItem = highestItems[highestItems.length - 1];
-        //   console.log("highest : ", highestItem);
-        //   if (!(itemKey in tempAdventureItemHistory.highest)) {
-        //     tempAdventureItemHistory.highest[itemKey] = [highestItem];
-        //   } else if (
-        //     tempAdventureItemHistory.highest[itemKey][
-        //       tempAdventureItemHistory.highest[itemKey].length - 1
-        //     ].rarity < highestItem.rarity
-        //   ) {
-        //     tempAdventureItemHistory.highest[itemKey].push(highestItem);
-        //   }
-
-        //   // if (!(itemKey in tempAdventureItemHistory.highest)) {
-        //   //   tempAdventureItemHistory.highest[itemKey] = [
-        //   //     highestItems[highestItems.length - 1],
-        //   //   ];
-        //   // } else if (
-        //   //   highestItems[highestItems.length - 1].rarity >
-        //   //   tempAdventureItemHistory.highest[itemKey][
-        //   //     tempAdventureItemHistory.highest[itemKey].length - 1
-        //   //   ].rarity
-        //   // ) {
-        //   //   tempAdventureItemHistory.highest[itemKey].push(
-        //   //     highestItems[highestItems.length - 1]
-        //   //   );
-        //   // }
-        // });
       }
     }
     setAdventureInfoLoading(false);
