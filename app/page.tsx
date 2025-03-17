@@ -59,8 +59,7 @@ export default function Home() {
         <Box>
           <TextBadge str="2025.03.17" color="gray" />
           <Text fontSize="sm" mt={2}>
-            현재 모험단 전체 테이블 조회가 불가능합니다. <br></br>
-            오류 수정 중입니다. 이용에 불편을 드려 죄송합니다.
+            모험단 전체 테이블 조회가 다시 이용 가능합니다.
           </Text>
         </Box>
       </HStack>
