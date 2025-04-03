@@ -167,10 +167,14 @@ export default function CharacterPage() {
     if (!characterInfo) {
       return;
     }
+
+    if (characterHistoryInfo && !characterHistoryInfo.updateDate) {
+      updateCharacter(characterInfo?.characterId, characterInfo?.serverId);
+      return;
+    }
+
     const currentTime = dayjs();
     const latestUpdateTime = dayjs(characterHistoryInfo?.updateDate);
-
-    // updateCharacter(characterInfo?.characterId, characterInfo?.serverId);
 
     if (currentTime.diff(latestUpdateTime, "minute") < 20) {
       toast({

@@ -71,9 +71,10 @@ export default function Home() {
         mb={10}>
         <InfoIcon />
         <Box>
-          <TextBadge str="2025.03.17" color="gray" />
+          <TextBadge str="2025.04.03" color="gray" />
           <Text fontSize="sm" mt={2}>
-            모험단 전체 테이블 조회가 다시 이용 가능합니다.
+            캐릭터의 '최근 업데이트' 시간이 보이지 않는다면 초기화를
+            부탁드립니다.
           </Text>
         </Box>
       </HStack>
