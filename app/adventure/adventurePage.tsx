@@ -28,6 +28,7 @@ export default function AdventurePage() {
   const [characterList, setCharacterList] = useState<Character[]>([]);
   const [tempAdventureName, setTempAdventureName] = useState<string>("");
   const [characterLoaded, setCharacterLoaded] = useState<boolean | null>(null);
+  const [allUpdateLoaded, setAllUpdateLoaded] = useState<boolean>(true);
 
   const {
     characterInfo,
@@ -105,6 +106,39 @@ export default function AdventurePage() {
     setTempAdventureName(event.target.value);
   };
 
+  async function updateAllCharacters() {
+    const params = new URLSearchParams();
+
+    const aName = searchParams.get("adventure");
+    if (!aName) {
+      return;
+    }
+    setAllUpdateLoaded(false);
+
+    params.set("adventureName", aName);
+    try {
+      const response = await fetch(`api/query/adventure?${params.toString()}`);
+      const data = await response.json();
+
+      if (data.data && Array.isArray(data.data)) {
+        data.data.map((character: CharacterResponse) => {
+          const newCharacter: Character = {
+            serverId: character.server_id,
+            characterId: character.character_id,
+            characterName: character.character_name,
+            adventureName: character.adventure_name,
+            jobName: character.job_name,
+          };
+
+          updateCharacter(newCharacter.characterId, newCharacter.serverId);
+        });
+      }
+    } catch (error) {
+      console.error("error ,", error);
+    }
+    setAllUpdateLoaded(true);
+  }
+
   return (
     <BaseLayout>
       <VStack>
@@ -123,17 +157,21 @@ export default function AdventurePage() {
                   _hover={{ borderColor: "black" }}
                 />
               </FormControl>
+              <Button type="submit" colorScheme="blue" size="md" height="100%">
+                조회
+              </Button>
               <Button
-                type="submit"
-                colorScheme="blue"
+                onClick={updateAllCharacters}
+                colorScheme="teal"
                 size="md"
                 height="100%"
-                mr={2}>
-                조회
+                isLoading={!allUpdateLoaded}>
+                일괄 갱신
               </Button>
             </HStack>
           </form>
         </Center>
+        <Center></Center>
         {characterLoaded !== null ? (
           characterLoaded === true ? (
             <Box>

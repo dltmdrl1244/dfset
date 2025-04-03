@@ -209,8 +209,6 @@ async function getCharacterTimelineFromAPI(
   // 직접 지정
   // let endDate = dayjs("2025-02-01 06:00:00");
 
-  console.log("API @@@@@@@@@@@@@@ STARTDATE : ", currentStartDate);
-
   while (endDate.isAfter(currentStartDate, "second")) {
     const diff = endDate.diff(currentStartDate, "d");
     const period = Math.min(88, diff);
@@ -223,7 +221,6 @@ async function getCharacterTimelineFromAPI(
     const curStartDateString = currentStartDate.format("YYYYMMDDTHHmm");
     const curEndDateString = currentEndDate.format("YYYYMMDDTHHmm");
     await fetchData(curStartDateString, curEndDateString, "");
-    // console.log(`fetch : ${curStartDateString} ~ ${curEndDateString}`);
 
     currentStartDate = currentEndDate.add(1, "day").set("h", 0).set("m", 0);
   }
