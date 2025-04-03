@@ -73,7 +73,9 @@ export default function Home() {
         <Box>
           <TextBadge str="2025.04.03" color="gray" />
           <Text fontSize="sm" mt={2}>
-            캐릭터의 '최근 업데이트' 시간이 보이지 않는다면 갱신을 부탁드립니다.
+            캐릭터의 '최근 업데이트' 시간이 보이지 않는다면 갱신을 부탁드립니다.{" "}
+            <br></br>
+            모험단 일괄 갱신 기능이 추가되었습니다.
           </Text>
         </Box>
       </HStack>
