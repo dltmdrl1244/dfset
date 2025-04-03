@@ -19,6 +19,7 @@ import { useEffect, useState } from "react";
 import CharacterAdventureBox from "../components/characterAdventureBox";
 import BaseLayout from "../components/baseLayout";
 import { AdventureAccordion } from "../components/adventureAccordion";
+import { useCharacter } from "../context/characterContext";
 
 export default function AdventurePage() {
   const searchParams = useSearchParams();
@@ -28,7 +29,18 @@ export default function AdventurePage() {
   const [tempAdventureName, setTempAdventureName] = useState<string>("");
   const [characterLoaded, setCharacterLoaded] = useState<boolean | null>(null);
 
+  const {
+    characterInfo,
+    setCharacterInfo,
+    updateCharacter,
+    characterHistoryInfo,
+    setCharacterHistoryInfo,
+  } = useCharacter();
+
   useEffect(() => {
+    setCharacterInfo(null);
+    setCharacterHistoryInfo(null);
+
     const aName = searchParams.get("adventure");
     if (!aName) {
       setAdventureName("");

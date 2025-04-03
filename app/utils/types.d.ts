@@ -35,6 +35,7 @@ interface CharacterHistory {
   itemCount: itemCountArray;
   weaponList: SimpleEquipment[];
   potList: SimpleEquipment[];
+  updateDate: string;
 }
 
 interface SimpleEquipment {

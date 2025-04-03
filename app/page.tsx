@@ -3,7 +3,7 @@
 import Title from "./components/title";
 import Form from "./components/form";
 import SearchResult from "./components/characterSearchResult";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   HStack,
@@ -16,6 +16,7 @@ import BaseLayout from "./components/baseLayout";
 import SearchHistory from "./components/searchHistory";
 import { InfoIcon } from "@chakra-ui/icons";
 import { TextBadge } from "./components/badges";
+import { useCharacter } from "./context/characterContext";
 
 export default function Home() {
   const [searchResult, setSearchResult] = useState<Character[]>([]);
@@ -25,6 +26,19 @@ export default function Home() {
     serverId: "",
     characterName: "",
   });
+
+  const {
+    characterInfo,
+    setCharacterInfo,
+    updateCharacter,
+    characterHistoryInfo,
+    setCharacterHistoryInfo,
+  } = useCharacter();
+
+  useEffect(() => {
+    setCharacterInfo(null);
+    setCharacterHistoryInfo(null);
+  }, []);
 
   return (
     <BaseLayout>
