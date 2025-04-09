@@ -73,21 +73,19 @@ export const SoulPrice = () => {
     }
 
     const lastUpdate = localStorage.getItem("lastUpdate");
-    if (!lastUpdate || dayjs().diff(lastUpdate, "minutes") > 5) {
+    if (!lastUpdate || dayjs().diff(lastUpdate, "minutes") >= 5) {
       updatePrice();
     }
   }, []);
 
   useEffect(() => {
     let tempVal = 99999999;
-    let tempIdx = -1;
     soulPrices.forEach((item, index) => {
       if (item == 0) {
         return;
       }
       if (item / soulItems[index].count < tempVal) {
         tempVal = item / soulItems[index].count;
-        tempIdx = index;
       }
     });
 
@@ -144,10 +142,16 @@ export const SoulPrice = () => {
             </Flex>
           </AccordionButton>
           <AccordionPanel overflowY="auto">
-            <Text>
-              {dayjs(localStorage.getItem("lastUpdate")).format("MM/DD HH:mm")}{" "}
-              기준
-            </Text>
+            {typeof window !== "undefined" &&
+              localStorage.getItem("lastUpdate") && (
+                <Text>
+                  {dayjs(localStorage.getItem("lastUpdate")).format(
+                    "MM/DD HH:mm"
+                  )}{" "}
+                  기준
+                </Text>
+              )}
+
             <Text>
               종말의 숭배자 한 판에 {cheapestPrice.toLocaleString()} 골드
             </Text>
