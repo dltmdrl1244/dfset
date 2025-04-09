@@ -161,7 +161,8 @@ export const SoulPrice = () => {
                   p={2}
                   alignItems={"center"}
                   gap={3}
-                  justifyContent={"space-between"}>
+                  justifyContent={"space-between"}
+                  key={`soulPriceInfo${index}`}>
                   <Flex alignItems={"center"} gap={3}>
                     <Image
                       src={`https://img-api.neople.co.kr/df/items/${soul.itemId}`}
