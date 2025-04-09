@@ -17,6 +17,7 @@ import SearchHistory from "./components/searchHistory";
 import { InfoIcon } from "@chakra-ui/icons";
 import { TextBadge } from "./components/badges";
 import { useCharacter } from "./context/characterContext";
+import { SoulPrice } from "./components/soulPrice";
 
 export default function Home() {
   const [searchResult, setSearchResult] = useState<Character[]>([]);
@@ -61,7 +62,8 @@ export default function Home() {
         )}
       </VStack>
       {isSearched && <SearchResult searchResult={searchResult} />}
-      <HStack
+      <SoulPrice />
+      {/* <HStack
         // width="500px"
         border="1px solid dimgray"
         p={4}
@@ -78,7 +80,7 @@ export default function Home() {
             모험단 일괄 갱신 기능이 추가되었습니다.
           </Text>
         </Box>
-      </HStack>
+      </HStack> */}
     </BaseLayout>
   );
 }
