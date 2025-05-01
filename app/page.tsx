@@ -62,8 +62,7 @@ export default function Home() {
         )}
       </VStack>
       {isSearched && <SearchResult searchResult={searchResult} />}
-      <SoulPrice />
-      {/* <HStack
+      <HStack
         // width="500px"
         border="1px solid dimgray"
         p={4}
@@ -72,15 +71,9 @@ export default function Home() {
         mt={10}
         mb={10}>
         <InfoIcon />
-        <Box>
-          <TextBadge str="2025.04.03" color="gray" />
-          <Text fontSize="sm" mt={2}>
-            캐릭터의 '최근 업데이트' 시간이 보이지 않는다면 갱신을 부탁드립니다.{" "}
-            <br></br>
-            모험단 일괄 갱신 기능이 추가되었습니다.
-          </Text>
-        </Box>
-      </HStack> */}
+        <Box>던파셋이 2025/05/03(토)에 서비스 종료 예정입니다. 감사합니다.</Box>
+      </HStack>
+      <SoulPrice />
     </BaseLayout>
   );
 }
